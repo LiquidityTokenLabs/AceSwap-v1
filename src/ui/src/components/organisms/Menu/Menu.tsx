@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import Link from 'next/link'
 import React, { FC, ReactNode, useState } from 'react'
 
 import { Color } from '@liqlab/utils/Color'
