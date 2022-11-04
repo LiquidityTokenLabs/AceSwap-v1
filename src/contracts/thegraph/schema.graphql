@@ -1,0 +1,16 @@
+type CollectionPoolList @entity {
+  id: ID!
+  approve: Boolean!
+  pool: [String!]
+  opool:[String!]
+}
+
+type UserStakePoolList @entity {
+  id: ID!
+  ftPool: [String!]
+  nftPool: [String!]
+}
+
+type BondingCurveList @entity {
+  id: ID!
+}

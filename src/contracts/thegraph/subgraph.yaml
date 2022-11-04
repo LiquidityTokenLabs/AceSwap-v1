@@ -1,0 +1,54 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Router
+    network: goerli
+    source:
+      address: "0x51595aBa59A4f47cB6F54e87703F1dcc28164098"
+      abi: Router
+      startBlock: 7790354
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - OwnershipTransferred
+        - Received
+        - StakeFT
+        - StakeNFT
+        - SwapFTforNFT
+        - SwapNFTforFT
+        - WithdrawFT
+        - WithdrawNFT
+        - updateBondingCurve
+        - updateCollection
+        - updatePool
+      abis:
+        - name: Router
+          file: ./abis/Router.json
+      eventHandlers:
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Received(address,uint256)
+          handler: handleReceived
+        - event: StakeFT(indexed address,indexed address,uint256,uint256)
+          handler: handleStakeFT
+        - event: StakeNFT(indexed address,indexed address,uint256,uint256[])
+          handler: handleStakeNFT
+        - event: SwapFTforNFT(indexed address,indexed address,uint256[],uint256,address)
+          handler: handleSwapFTforNFT
+        - event: SwapNFTforFT(indexed address,indexed address,uint256[],uint256,address)
+          handler: handleSwapNFTforFT
+        - event: WithdrawFT(indexed address,indexed address,uint256[],uint256,uint256,uint256)
+          handler: handleWithdrawFT
+        - event: WithdrawNFT(indexed address,indexed address,uint256[],uint256,uint256)
+          handler: handleWithdrawNFT
+        - event: updateBondingCurve(indexed address,bool)
+          handler: handleupdateBondingCurve
+        - event: updateCollection(indexed address,bool)
+          handler: handleupdateCollection
+        - event: updatePool(indexed address,indexed address,bool)
+          handler: handleupdatePool
+      file: ./src/router.ts

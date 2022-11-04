@@ -1,0 +1,146 @@
+import { ethers } from 'ethers'
+import { FC, useCallback, useEffect, useState } from 'react'
+import { useMoralisWeb3Api } from 'react-moralis'
+import { Board } from '../../components/Board'
+
+import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
+import { Nft } from '@liqlab/utils/Domain/Nft'
+import { PoolInfo } from '@liqlab/utils/Domain/PoolInfo'
+
+import { poolContract } from '../../hook'
+import { useSwapFTforNFT } from '../../hook/SwapFTforNFT'
+import { showTransactionToast } from '@liqlab/client/src/components/Toast'
+
+const Page: FC = () => {
+  const contractConfig = GoerliConfig // TODO
+  const Web3Api = useMoralisWeb3Api()
+  const [nfts, setNfts] = useState<Nft[]>([])
+  const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
+  const { send, transactionHash, error, success, loading } = useSwapFTforNFT()
+
+  const getPoolInfo = useCallback(async () => {
+    const tmpPoolInfo = await poolContract.getPoolInfo()
+    const curveType = poolContract.bondingCurve
+    const delta = ethers.utils.formatEther(tmpPoolInfo.spread.toString())
+    const spread = ethers.utils.formatEther(tmpPoolInfo.spread.toString())
+    const spotPrice = Number(
+      ethers.utils.formatEther(tmpPoolInfo.spotPrice.toString())
+    )
+    const deltaNum = Number(
+      ethers.utils.formatEther(tmpPoolInfo.delta.toString())
+    )
+    const spreadNum = Number(
+      ethers.utils.formatEther(tmpPoolInfo.spread.toString())
+    )
+
+    return {
+      id: '',
+      name: '',
+      curveType: curveType,
+      delta: delta,
+      spread: spread,
+      spotPrice: spotPrice,
+      deltaNum: deltaNum,
+      spreadNum: spreadNum,
+    }
+  }, [])
+
+  // TODO プールにあるNFTを取得
+  const fetchNFT = useCallback(async () => {
+    const options: {
+      chain: any
+      address: any
+      token_addresses: any
+    } = await {
+      chain: contractConfig.ChainName, //チェーン
+      address: contractConfig.Pool721Address, //ロックされているコントラクトの場所
+      token_addresses: contractConfig.TokenAddress, //filterここのアドレスのNFTのみが表示される
+    }
+    const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
+    const tmpPoolInfo = await poolContract.getPoolInfo()
+    const tmpSpotPrice = tmpPoolInfo.spotPrice
+    const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
+    const results = tmpCtrItemList.result
+
+    const res = results!.map((nft) => {
+      const metadata = JSON.parse(nft.metadata!)
+      const r: Nft = {
+        id: nft.token_id,
+        price: price,
+        collectionName: nft.name,
+        collectionAddr: nft.token_address,
+        name: metadata.name,
+        src: metadata.image,
+      }
+      return r
+    })
+    return res
+  }, [])
+
+  const submit = useCallback(
+    async (selectedNfts: Nft[]) => {
+      // TODO 引数のselectedNftsを購入する処理
+      const ids = ['3']
+      // const ids = selectedNfts.map((nft) => nft.id)
+      if (ids.length === 0 || !poolInfo) {
+        return
+      }
+      const spotPrice = ethers.utils.parseEther(`${poolInfo.spotPrice}`)
+      const tmpFee = await poolContract.getCalcBuyInfo(ids.length, spotPrice)
+      const feeETH = ethers.utils.formatEther(tmpFee.toString())
+      const feeWei = ethers.utils.parseEther(feeETH.toString())
+      console.log({ feeETH })
+      await send(
+        contractConfig.Pool721Address,
+        ids,
+        contractConfig.ProtocolAddress,
+        {
+          value: feeWei,
+          gasLimit: '3000000',
+        }
+      )
+    },
+    [poolInfo]
+  )
+
+  useEffect(() => {
+    if (success) {
+      console.log({ hash: transactionHash })
+    } else if (error) {
+      console.log({ error })
+    } else if (loading) {
+      console.log({ loading })
+    }
+  }, [success, error, loading])
+
+  useEffect(() => {
+    const f = async () => {
+      const tmp = await fetchNFT()
+      setNfts(tmp)
+      const tmpPoolInfo = await getPoolInfo()
+      setPoolInfo(tmpPoolInfo)
+    }
+    f()
+  }, [])
+
+  // TODO Toastの見本
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     showTransactionToast(
+  //       'スワップ完了',
+  //       'https://docs.sss-symbol.com',
+  //       'error'
+  //     )
+  //   }, 1000)
+  // }, [])
+
+  if (poolInfo === null) {
+    return <>LOADING</>
+  }
+
+  return (
+    <Board items={nfts} poolInfo={poolInfo} submit={submit} operation="BUY" />
+  )
+}
+
+export default Page

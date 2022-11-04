@@ -1,0 +1,135 @@
+import styled from '@emotion/styled'
+import { Card, Frame, PrimaryButton } from '@liqlab/ui'
+import { Color } from '@liqlab/utils/Color'
+import { Nft } from '@liqlab/utils/Domain/Nft'
+import { Pool } from '@liqlab/utils/Domain/Pool'
+import { PoolInfo } from '@liqlab/utils/Domain/PoolInfo'
+import { FC, useEffect, useState } from 'react'
+import { NftWrapper } from '../NftWrapper'
+
+type Props = {
+  items: Nft[]
+  poolInfo: Pool
+  submit: (selectedNfts: Nft[]) => void
+  operation: 'BUY' | 'SELL'
+}
+
+type PreviewNft = {
+  info: Nft
+  isActive: boolean
+}
+
+export const Board: FC<Props> = ({ items, poolInfo, submit, operation }) => {
+  const [nfts, setNfts] = useState<PreviewNft[]>([])
+
+  const [anchorPrice, setAnchorPrice] = useState(0)
+
+  const selectedNfts = nfts.filter((nft) => nft.isActive)
+
+  const operationText = operation === 'BUY' ? 'Buy' : 'Sell'
+
+  const totalPrice = (() => {
+    const n = selectedNfts.length
+    const x = poolInfo.spotPrice
+    const y = poolInfo.deltaNum
+    return operation === 'BUY'
+      ? n * x + ((n / 2) * (n + 1) - n) * y
+      : n * x - ((n / 2) * (n + 1) - n) * y
+  })()
+
+  useEffect(() => {
+    const newNfts = items.map((n) => {
+      return {
+        info: n,
+        isActive: false,
+      }
+    })
+    setNfts(newNfts)
+  }, [items])
+
+  const select = (num: number) => {
+    const newNfts = nfts.map((nft, i) => {
+      if (i === num) {
+        nft.isActive = !nft.isActive
+      }
+      return nft
+    })
+    setNfts(newNfts)
+  }
+
+  return (
+    <Card padding="26px">
+      <Root>
+        <Header>
+          <Title>{operationText}</Title>
+        </Header>
+        <Content>
+          {nfts.map((nft, i) => {
+            return (
+              <Item key={nft.info.id} onClick={() => select(i)}>
+                <NftWrapper
+                  src={nft.info.src}
+                  collection={nft.info.collectionName}
+                  name={nft.info.name}
+                  isActive={nft.isActive}
+                  chainId={5}
+                  price={nft.info.price}
+                  selectedCount={selectedNfts.length}
+                  setAnchorPrice={setAnchorPrice}
+                  anchorPrice={anchorPrice}
+                  delta={poolInfo.deltaNum}
+                  operation={operation}
+                />
+              </Item>
+            )
+          })}
+        </Content>
+        <Footer>
+          <TotalPrice>Total Fee {totalPrice} ETH</TotalPrice>
+          <PrimaryButton
+            label={operationText}
+            clickHandler={() => submit(selectedNfts.map((nft) => nft.info))}
+          />
+        </Footer>
+      </Root>
+    </Card>
+  )
+}
+
+const Root = styled('div')({
+  width: '818px', // 870 - 52
+  height: '498px', // 550 - 52
+})
+
+const Header = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '20px',
+  height: '50px',
+})
+
+const Footer = styled('div')({
+  marginTop: '20px',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'end',
+})
+
+const TotalPrice = styled('div')({
+  fontSize: '16px',
+  color: Color.text.secondary,
+})
+
+const Title = styled('div')({
+  fontSize: '24px',
+  color: Color.black.primary,
+})
+
+const Content = styled('div')({
+  display: 'flex',
+  gap: '18px 20px',
+  height: '370px',
+})
+
+const Item = styled('div')({})

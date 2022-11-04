@@ -1,0 +1,1 @@
+export { useEmits } from './EmitNFTforFT'
