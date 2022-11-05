@@ -2,8 +2,10 @@ import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 import { Contract, ethers, utils } from 'ethers'
 import ROUTER_ABI from '@liqlab/contracts/artifacts/contracts/Router.sol/Router.json'
 import POOL721_ABI from '@liqlab/contracts/artifacts/contracts/pool/SingleNativeOPool.sol/SingleNativeOPool.json'
+import SampleNFT_ABI from '@liqlab/contracts/artifacts/contracts/SampleNFT.sol/SampleNFT.json'
 import { Router } from '../../contracts/Router.sol'
 import { Pool721 } from '../../contracts/Pool721.sol'
+import { SampleNFT } from '../../contracts/SampleNFT.sol'
 
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const signer = provider.getSigner()
@@ -19,6 +21,11 @@ export const poolContract = new ethers.Contract(
   POOL721_ABI.abi,
   signer
 ) as Pool721
+export const nftContract = new ethers.Contract(
+  contractConfig.TokenAddress,
+  SampleNFT_ABI.abi,
+  signer
+) as SampleNFT
 export const NFT_ABI = [
   {
     inputs: [
