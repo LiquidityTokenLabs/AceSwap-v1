@@ -1,7 +1,7 @@
 import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 import { Contract, ethers, utils } from 'ethers'
 import ROUTER_ABI from '@liqlab/contracts/artifacts/contracts/Router.sol/Router.json'
-import POOL721_ABI from '@liqlab/contracts/artifacts/contracts/pool/SingleNativeOPool.sol/SingleNativeOPool.json'
+import POOL721_ABI from '@liqlab/contracts/artifacts/contracts/pool/SingleNativeNOPool.sol/SingleNativeNOPool.json'
 import SampleNFT_ABI from '@liqlab/contracts/artifacts/contracts/SampleNFT.sol/SampleNFT.json'
 import { Router } from '../../contracts/Router.sol'
 import { Pool721 } from '../../contracts/Pool721.sol'
