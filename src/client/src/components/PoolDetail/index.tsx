@@ -91,8 +91,6 @@ export const PoolDetail: FC<Props> = ({
     f()
   }, [])
 
-  console.log({ nfts })
-
   return (
     <Root>
       <Back onClick={pageBack}>
