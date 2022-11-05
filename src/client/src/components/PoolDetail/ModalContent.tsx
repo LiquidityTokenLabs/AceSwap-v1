@@ -75,7 +75,7 @@ export const ModalContent: FC<Props> = ({
       }
     })
     setPreviewNfts(newNfts)
-  }, [])
+  }, [stakingNfts])
 
   const select = (num: number) => {
     const newNfts = previewNfts.map((nft, i) => {
