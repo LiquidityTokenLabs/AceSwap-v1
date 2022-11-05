@@ -25,7 +25,7 @@ export const Frame: FC<Props> = ({
     <Root isActive={isActive}>
       <Contents>
         <NftImage>
-          <Img src={src} />
+          <Img src="/aceswap-girl.png" />
         </NftImage>
         <Collection>{collection}</Collection>
         <Name>{name}</Name>
