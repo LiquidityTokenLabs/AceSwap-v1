@@ -51,7 +51,7 @@ export const StakeNFT: FC<Props> = ({ items, pool, staking }) => {
               <Item key={nft.info.id} onClick={() => select(i)}>
                 <NftWrapper
                   price={nft.info.price}
-                  src={nft.info.src}
+                  src="/aceswap-girl.png"
                   collection={nft.info.collectionName}
                   name={nft.info.name}
                   isActive={nft.isActive}

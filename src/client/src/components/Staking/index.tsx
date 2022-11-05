@@ -10,12 +10,12 @@ import { AiOutlineArrowLeft } from 'react-icons/ai'
 
 import { Contract, ethers } from 'ethers'
 import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
-import { NFT_ABI, poolContract } from '../../hook'
+import { useTx } from '../../context/transaction'
+import { nftContract, NFT_ABI, poolContract } from '../../hook'
 import { useStakeNFT } from '../../hook/StakeNFT'
 import { showTransactionToast } from '../Toast'
 import { StakeFT } from './StakeFT'
 import { StakeNFT } from './StakeNFT'
-import { useTx } from '../../context/transaction'
 
 type Props = {
   pageBack: () => void
@@ -38,33 +38,25 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
   // TODO ユーザーが所持しているNFTを取得
   const fetchNFT = useCallback(async () => {
     if (!user) return
-
-    const options: {
-      chain: any
-      address: any
-      token_addresses: any
-    } = await {
-      chain: contractConfig.ChainName, //チェーン
-      address: user.get('ethAddress'), //ロックされているコントラクトの場所
-      token_addresses: contractConfig.TokenAddress, //filterここのアドレスのNFTのみが表示される
-    }
-    const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
+    const accounts = await window.ethereum.request({
+      method: 'eth_requestAccounts',
+    })
+    const account = accounts[0]
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
     const tmpSpread = tmpPoolInfo.spread
     const spread = Number(ethers.utils.formatEther(tmpSpread.toString()))
     const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
-    const results = tmpCtrItemList.result
+    const results = await nftContract.getAllHeldIds(account)
 
     const res = results!.map((nft) => {
-      const metadata = JSON.parse(nft.metadata!) || { name: '', src: '' }
       const r: Nft = {
-        id: nft.token_id,
+        id: String(nft),
         price: price * (1 - spread),
-        collectionName: nft.name,
-        collectionAddr: nft.token_address,
-        name: metadata.name,
-        src: metadata.image,
+        collectionName: 'AceSwap Girl',
+        collectionAddr: contractConfig.TokenAddress,
+        name: `AceSwap Girl #${nft}`,
+        src: '',
       }
       return r
     })
@@ -124,6 +116,8 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
   useEffect(() => {
     setIsLoading(loading)
   }, [loading])
+
+  console.log({ nfts })
 
   return (
     <Root>
