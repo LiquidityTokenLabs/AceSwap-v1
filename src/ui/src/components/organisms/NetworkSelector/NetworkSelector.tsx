@@ -1,18 +1,14 @@
 import styled from '@emotion/styled'
-import React, { FC, useState } from 'react'
 import { Color } from '@liqlab/utils/Color'
+import { FC } from 'react'
 
+import { ChainInfo, getChainInfoById } from '@liqlab/utils/Config/ChainConfig'
 import { FaAngleDown } from 'react-icons/fa'
 import { IoWarningOutline } from 'react-icons/io5'
-import {
-  ChainInfo,
-  getChainInfoById,
-  SUPPORTED_CHAINS_ID,
-} from '@liqlab/utils/Config/ChainConfig'
 
-import { MdExpandMore } from 'react-icons/md'
-import { Logo } from '../../atoms'
 import { getBase64Src } from '@liqlab/utils/Config/TokenConfig'
+import { convertDec2Hex } from '@liqlab/utils/Format'
+import { Logo } from '../../atoms'
 
 export type Chain = {
   info: ChainInfo
@@ -25,64 +21,58 @@ type Props = {
 }
 
 export const NetworkSelector: FC<Props> = ({ currentChainId, chains }) => {
-  const [isOpen, setIsOpen] = useState(false)
-
-  const openMenu = () => {
-    setIsOpen(true)
-  }
-  const closeMenu = () => {
-    setIsOpen(false)
-  }
-
-  const getContent = () => {
-    if (!isOpen) {
-      return <></>
+  const changeChain = async (id: number) => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [
+          {
+            chainId: convertDec2Hex(id),
+          },
+        ],
+      })
+    } catch (Exeption) {
+      try {
+        const networkInfo = getChainInfoById(id)
+        const params = {
+          chainId: convertDec2Hex(id),
+          chainName: networkInfo.network,
+          nativeCurrency: networkInfo.nativeCurrency,
+          rpcUrls: [networkInfo.rpcUrl],
+        }
+        // console.log({ params })
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [params],
+        })
+      } catch (Exeption) {}
+    } finally {
+      window.location.reload() // TODO
     }
-
-    return (
-      <MenuWrapper>
-        {chains.map((item) => {
-          // console.log('id', item.info.id)
-          return (
-            <Item key={item.info.id}>
-              <NetworkWrapper onClick={item.action}>
-                <Logo image={getBase64Src(`${item.info.id}`)} />
-                <Text>{item.info.name}</Text>
-              </NetworkWrapper>
-            </Item>
-          )
-        })}
-      </MenuWrapper>
-    )
   }
 
-  if (!SUPPORTED_CHAINS_ID.includes(currentChainId)) {
+  if (currentChainId == 592) {
     return (
-      <Root onMouseOver={openMenu} onMouseLeave={closeMenu}>
-        <SwitchNetwork>
+      <Root>
+        <CurrentChain>
+          <NetworkWrapper>
+            <Logo image={getBase64Src(`${currentChainId}`)} />
+            <Text>ASTAR</Text>
+          </NetworkWrapper>
+        </CurrentChain>
+      </Root>
+    )
+  } else {
+    return (
+      <Root>
+        <SwitchNetwork onClick={() => changeChain(592)}>
           <IoWarningOutline />
           <Text>Switch Network</Text>
           <FaAngleDown />
         </SwitchNetwork>
-        {getContent()}
       </Root>
     )
   }
-
-  const chainInfo = getChainInfoById(currentChainId)
-
-  return (
-    <Root onMouseOver={openMenu} onMouseLeave={closeMenu}>
-      <CurrentChain>
-        <NetworkWrapper>
-          <Logo image={getBase64Src(`${currentChainId}`)} />
-          <Text>{chainInfo.name}</Text>
-        </NetworkWrapper>
-        <MdExpandMore />
-      </CurrentChain>
-      {getContent()}
-    </Root>
-  )
 }
 
 const SwitchNetwork = styled('div')({
@@ -128,26 +118,6 @@ const Img = styled('div')({
 const Text = styled('div')({
   fontSize: '16px',
   minWidth: '100px',
-})
-
-const MenuWrapper = styled('div')({
-  position: 'absolute',
-  top: '70px',
-  background: Color.white.pure,
-  borderRadius: '16px',
-  boxSizing: 'border-box',
-  border: `1px solid ${Color.themes.primary.default}`,
-  width: '184px',
-  padding: '8px 16px',
-})
-
-const Item = styled('div')({
-  padding: '8px',
-  cursor: 'pointer',
-  borderRadius: '8px',
-  ':hover': {
-    background: Color.white.seccondary,
-  },
 })
 
 const Root = styled('div')({
