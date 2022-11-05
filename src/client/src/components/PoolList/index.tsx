@@ -7,12 +7,13 @@ import { getBase64Src } from '@liqlab/utils/Config/TokenConfig'
 import { useNavigate } from 'react-router'
 
 type Props = {
-  pools: Pool[]
+  pool: Pool
   movePage: (id: string) => void
 }
 
-export const PoolList: FC<Props> = ({ pools, movePage }) => {
+export const PoolList: FC<Props> = ({ pool, movePage }) => {
   const navi = useNavigate()
+  const src = getBase64Src(pool.id)
 
   // TODO プールのIDを使ってページ遷移
   // FIXME コンポーネントの外で定義
@@ -28,46 +29,41 @@ export const PoolList: FC<Props> = ({ pools, movePage }) => {
       <Card padding="8px">
         <ContentTitle>Pool (1)</ContentTitle>
         <PoolWrapper>
-          {pools.map((pool) => {
-            const src = getBase64Src(pool.id)
-            return (
-              <Item key={pool.id} onClick={() => movePage(pool.id)}>
-                <Flexleft gap="8px">
-                  <Logo image={src} />
-                  <Text color={Color.text.primary} size="20px">
-                    {pool.name}
-                  </Text>
-                  <Chip label={'x3'} />
-                </Flexleft>
-                <Flexleft gap="20px">
-                  <Flexleft gap="0px">
-                    <Text color={Color.text.secondary} size="16px">
-                      Bonding Curve:
-                    </Text>
-                    <Text color={Color.text.primary} size="16px">
-                      {pool.curveType}
-                    </Text>
-                  </Flexleft>
-                  <Flexleft gap="0px">
-                    <Text color={Color.text.secondary} size="16px">
-                      Delta:
-                    </Text>
-                    <Text color={Color.text.primary} size="16px">
-                      {pool.delta}
-                    </Text>
-                  </Flexleft>
-                  <Flexleft gap="0px">
-                    <Text color={Color.text.secondary} size="16px">
-                      Spread:
-                    </Text>
-                    <Text color={Color.text.primary} size="16px">
-                      {pool.spread}
-                    </Text>
-                  </Flexleft>
-                </Flexleft>
-              </Item>
-            )
-          })}
+          <Item key={pool.id} onClick={() => movePage(pool.id)}>
+            <Flexleft gap="8px">
+              <Logo image={src} />
+              <Text color={Color.text.primary} size="20px">
+                {pool.name}
+              </Text>
+              <Chip label={'x3'} />
+            </Flexleft>
+            <Flexleft gap="20px">
+              <Flexleft gap="0px">
+                <Text color={Color.text.secondary} size="16px">
+                  Bonding Curve:
+                </Text>
+                <Text color={Color.text.primary} size="16px">
+                  {pool.curveType}
+                </Text>
+              </Flexleft>
+              <Flexleft gap="0px">
+                <Text color={Color.text.secondary} size="16px">
+                  Delta:
+                </Text>
+                <Text color={Color.text.primary} size="16px">
+                  {pool.delta}
+                </Text>
+              </Flexleft>
+              <Flexleft gap="0px">
+                <Text color={Color.text.secondary} size="16px">
+                  Spread:
+                </Text>
+                <Text color={Color.text.primary} size="16px">
+                  {pool.spread}
+                </Text>
+              </Flexleft>
+            </Flexleft>
+          </Item>
         </PoolWrapper>
       </Card>
     </Root>

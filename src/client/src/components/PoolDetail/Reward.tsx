@@ -15,7 +15,7 @@ export const Reward: FC<Props> = ({ reward }) => {
       <Title>未請求の報酬</Title>
       <PriceWrapper>
         <Logo image={getBase64Src(chainId)} size={30} />
-        <Price>{reward}</Price>
+        <Price>{reward.toFixed(5)}</Price>
       </PriceWrapper>
     </Root>
   )

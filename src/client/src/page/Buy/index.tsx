@@ -55,30 +55,19 @@ const Page: FC = () => {
 
   // TODO プールにあるNFTを取得
   const fetchNFT = useCallback(async () => {
-    const options: {
-      chain: any
-      address: any
-      token_addresses: any
-    } = await {
-      chain: contractConfig.ChainName, //チェーン
-      address: contractConfig.Pool721Address, //ロックされているコントラクトの場所
-      token_addresses: contractConfig.TokenAddress, //filterここのアドレスのNFTのみが表示される
-    }
-    const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
     const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
-    const results = tmpCtrItemList.result
+    const results = await poolContract.getAllHoldIds()
 
     const res = results!.map((nft) => {
-      const metadata = JSON.parse(nft.metadata!)
       const r: Nft = {
-        id: nft.token_id,
+        id: String(nft),
         price: price,
-        collectionName: nft.name,
-        collectionAddr: nft.token_address,
-        name: metadata.name,
-        src: metadata.image,
+        collectionName: 'AceSwap Girl',
+        collectionAddr: contractConfig.TokenAddress,
+        name: `AceSwap Girl #${nft}`,
+        src: '',
       }
       return r
     })

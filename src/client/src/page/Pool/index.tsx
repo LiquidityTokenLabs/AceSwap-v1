@@ -9,7 +9,7 @@ import { poolContract } from '../../hook'
 import { ethers } from 'ethers'
 
 const Page: FC = () => {
-  const [pools, setPools] = useState<Pool[]>([])
+  const [pool, setPool] = useState<Pool>()
 
   const navi = useNavigate()
 
@@ -28,24 +28,22 @@ const Page: FC = () => {
       ethers.utils.formatEther(tmpPoolInfo.spread.toString())
     )
 
-    return [
-      {
-        id: '1234',
-        name: 'AceSwap Girl',
-        curveType: curveType,
-        delta: delta,
-        spread: spread,
-        spotPrice: spotPrice,
-        deltaNum: deltaNum,
-        spreadNum: spreadNum,
-      },
-    ]
+    return {
+      id: '1234',
+      name: 'AceSwap Girl',
+      curveType: curveType,
+      delta: delta,
+      spread: spread,
+      spotPrice: spotPrice,
+      deltaNum: deltaNum,
+      spreadNum: spreadNum,
+    }
   }, [])
 
   useEffect(() => {
     const f = async () => {
       const tmpPoolInfo = await getPoolInfo()
-      setPools(tmpPoolInfo)
+      setPool(tmpPoolInfo)
     }
     f()
   }, [])
@@ -54,7 +52,7 @@ const Page: FC = () => {
     navi(id)
   }
 
-  if (pools.length === 0) {
+  if (!pool) {
     return (
       <Root>
         <EmptyPool />
@@ -64,7 +62,7 @@ const Page: FC = () => {
 
   return (
     <Root>
-      <PoolList pools={pools} movePage={movePage} />
+      <PoolList pool={pool} movePage={movePage} />
     </Root>
   )
 }

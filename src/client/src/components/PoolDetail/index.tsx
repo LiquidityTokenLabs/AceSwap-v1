@@ -1,21 +1,20 @@
 import styled from '@emotion/styled'
-import { FC, useCallback, useEffect, useState } from 'react'
-import { Pool } from '@liqlab/utils/Domain/Pool'
-import { Color } from '@liqlab/utils/Color'
 import { Card, FixedButton, Mode, ModeSelector } from '@liqlab/ui'
+import { Color } from '@liqlab/utils/Color'
+import { History } from '@liqlab/utils/Domain/History'
+import { Pool } from '@liqlab/utils/Domain/Pool'
+import { FC, useCallback, useEffect, useState } from 'react'
+import { Histories } from './Histories'
 import { PoolSetting } from './PoolSetting'
 import { PoolStatus } from './PoolStatus'
 import { Reward } from './Reward'
-import { History } from '@liqlab/utils/Domain/History'
-import { Histories } from './Histories'
 
-import { HiArrowNarrowLeft } from 'react-icons/hi'
-import { ModalContent } from './ModalContent'
-import { Nft } from '@liqlab/utils/Domain/Nft'
-import { useMoralisWeb3Api } from 'react-moralis'
-import { poolContract } from '../../hook'
-import { ethers } from 'ethers'
 import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
+import { Nft } from '@liqlab/utils/Domain/Nft'
+import { ethers } from 'ethers'
+import { HiArrowNarrowLeft } from 'react-icons/hi'
+import { poolContract } from '../../hook'
+import { ModalContent } from './ModalContent'
 
 type Props = {
   pool: Pool
@@ -35,7 +34,6 @@ export const PoolDetail: FC<Props> = ({
   pageBack,
 }) => {
   const contractConfig = GoerliConfig
-  const Web3Api = useMoralisWeb3Api()
   const [mode, setMode] = useState<'INFO' | 'EVENT'>('INFO')
   const [openModal, setModalOpen] = useState(false)
   const [nfts, setNfts] = useState<Nft[]>([])
@@ -66,35 +64,24 @@ export const PoolDetail: FC<Props> = ({
 
   // TODO ステークしているNFT一覧
   const fetchNFT = useCallback(async () => {
-    const options: {
-      chain: any
-      address: any
-      token_addresses: any
-    } = await {
-      chain: contractConfig.ChainName, //チェーン
-      address: contractConfig.Pool721Address, //ロックされているコントラクトの場所
-      token_addresses: contractConfig.TokenAddress, //filterここのアドレスのNFTのみが表示される
-    }
-    const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
     const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
-    const results = tmpCtrItemList.result
+    const results = await poolContract.getAllHoldIds()
 
     const res = results!.map((nft) => {
-      const metadata = JSON.parse(nft.metadata!)
       const r: Nft = {
-        id: nft.token_id,
+        id: String(nft),
         price: price,
-        collectionName: nft.name,
-        collectionAddr: nft.token_address,
-        name: metadata.name,
-        src: metadata.image,
+        collectionName: 'AceSwap Girl',
+        collectionAddr: contractConfig.TokenAddress,
+        name: `AceSwap Girl #${nft}`,
+        src: '',
       }
       return r
     })
     return res
-  }, [Web3Api.account, poolContract])
+  }, [])
 
   useEffect(() => {
     const f = async () => {
@@ -103,6 +90,8 @@ export const PoolDetail: FC<Props> = ({
     }
     f()
   }, [])
+
+  console.log({ nfts })
 
   return (
     <Root>

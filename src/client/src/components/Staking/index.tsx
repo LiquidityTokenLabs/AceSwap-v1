@@ -1,14 +1,21 @@
 import styled from '@emotion/styled'
 import { Logo } from '@liqlab/ui'
 import { Color } from '@liqlab/utils/Color'
+import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 import { getBase64Src } from '@liqlab/utils/Config/TokenConfig'
 import { Nft } from '@liqlab/utils/Domain/Nft'
 import { Pool } from '@liqlab/utils/Domain/Pool'
-import { FC, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { AiOutlineArrowLeft } from 'react-icons/ai'
 
+import { Contract, ethers } from 'ethers'
+import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
+import { NFT_ABI, poolContract } from '../../hook'
+import { useStakeNFT } from '../../hook/StakeNFT'
+import { showTransactionToast } from '../Toast'
 import { StakeFT } from './StakeFT'
 import { StakeNFT } from './StakeNFT'
+import { useTx } from '../../context/transaction'
 
 type Props = {
   pageBack: () => void
@@ -16,72 +23,65 @@ type Props = {
 }
 
 export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
+  const contractConfig = GoerliConfig
+  const { user } = useMoralis()
   const [stakeMode, setStakeMode] = useState<'NFT' | 'FT'>('NFT')
-
+  const Web3Api = useMoralisWeb3Api()
   const [stakePrice, setStakePrice] = useState(1.05)
-  const [delta, setDelta] = useState(0.1)
+  const [delta, setDelta] = useState(Number(poolInfo.delta))
+  const [nfts, setNfts] = useState<Nft[]>([])
+  const { send, success, error, loading, transactionHash } = useStakeNFT()
+  const { setIsLoading } = useTx()
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const signer = provider.getSigner()
 
-  const items: Nft[] = [
-    {
-      id: '1',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #1',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '2',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #2',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '3',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #3',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '4',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #4',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '5',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #5',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '6',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #6',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '7',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #7',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-  ]
+  // TODO ユーザーが所持しているNFTを取得
+  const fetchNFT = useCallback(async () => {
+    if (!user) return
+
+    const options: {
+      chain: any
+      address: any
+      token_addresses: any
+    } = await {
+      chain: contractConfig.ChainName, //チェーン
+      address: user.get('ethAddress'), //ロックされているコントラクトの場所
+      token_addresses: contractConfig.TokenAddress, //filterここのアドレスのNFTのみが表示される
+    }
+    const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
+    const tmpPoolInfo = await poolContract.getPoolInfo()
+    const tmpSpotPrice = tmpPoolInfo.spotPrice
+    const tmpSpread = tmpPoolInfo.spread
+    const spread = Number(ethers.utils.formatEther(tmpSpread.toString()))
+    const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
+    const results = tmpCtrItemList.result
+
+    const res = results!.map((nft) => {
+      const metadata = JSON.parse(nft.metadata!) || { name: '', src: '' }
+      const r: Nft = {
+        id: nft.token_id,
+        price: price * (1 - spread),
+        collectionName: nft.name,
+        collectionAddr: nft.token_address,
+        name: metadata.name,
+        src: metadata.image,
+      }
+      return r
+    })
+    return res
+  }, [user, Web3Api.account])
 
   // TODO staking nft
-  const stakeNft = (nfts: Nft[]) => {
+  const stakeNft = async (nfts: Nft[]) => {
+    const ids = nfts.map((nft) => nft.id)
+    const collectionAddrs = nfts.map((nft) => nft.collectionAddr)
+    for (let i = 0; i < collectionAddrs.length; ++i) {
+      const nftContract = new Contract(collectionAddrs[i], NFT_ABI, signer)
+      await nftContract.approve(contractConfig.Pool721Address, ids[i])
+    }
+    await send(contractConfig.Pool721Address, ids, {
+      gasLimit: '3000000',
+    })
     console.log('stake nft :', nfts)
   }
 
@@ -89,6 +89,41 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
   const stakeFt = (price: number) => {
     console.log('stake ft :', price)
   }
+
+  useEffect(() => {
+    if (success) {
+      setTimeout(() => {
+        showTransactionToast(
+          'スワップ完了',
+          `https://goerli.etherscan.io/tx/${transactionHash}`,
+          'success'
+        )
+      }, 1000)
+    } else if (error) {
+      console.log({ error })
+      setTimeout(() => {
+        showTransactionToast(
+          'スワップ失敗',
+          `https://goerli.etherscan.io/tx/${transactionHash}`,
+          'error'
+        )
+      }, 1000)
+    }
+  }, [success, error])
+
+  useEffect(() => {
+    const f = async () => {
+      const tmp = await fetchNFT()
+      if (!!tmp) {
+        setNfts(tmp)
+      }
+    }
+    f()
+  }, [success])
+
+  useEffect(() => {
+    setIsLoading(loading)
+  }, [loading])
 
   return (
     <Root>
@@ -149,7 +184,7 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
         <Right>
           {stakeMode === 'NFT' ? (
             <StakeNFT
-              items={items}
+              items={nfts}
               pool={poolInfo}
               staking={(nfts) => stakeNft(nfts)}
             />

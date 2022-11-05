@@ -1,12 +1,14 @@
 import styled from '@emotion/styled'
 import { AstarLogo, EthLogo, FixedButton } from '@liqlab/ui'
 import { Color } from '@liqlab/utils/Color'
+import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 import { Nft } from '@liqlab/utils/Domain/Nft'
 import { Pool } from '@liqlab/utils/Domain/Pool'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { FC, useState } from 'react'
 
 import Modal from 'react-modal'
+import { useWithdrawNFT } from '../../hook/WithdrawNFT'
 import { NftWrapper } from '../NftWrapper'
 
 const customStyles = {
@@ -50,10 +52,20 @@ export const ModalContent: FC<Props> = ({
   stakeNFT,
   reward,
 }) => {
+  const contractConfig = GoerliConfig
   const chainId = 5
+  const { send: WithdrawNFT, success, error, loading } = useWithdrawNFT()
 
   const [previewNfts, setPreviewNfts] = useState<PreviewNft[]>([])
   const selectedNfts = previewNfts.filter((nft) => nft.isActive)
+
+  const submit = useCallback(
+    async (selectedNfts: Nft[]) => {
+      const ids = selectedNfts.map((nft) => nft.id)
+      await WithdrawNFT(contractConfig.Pool721Address, ids)
+    },
+    [WithdrawNFT]
+  )
 
   useEffect(() => {
     const newNfts = stakingNfts.map((n) => {
@@ -65,28 +77,44 @@ export const ModalContent: FC<Props> = ({
     setPreviewNfts(newNfts)
   }, [])
 
+  const select = (num: number) => {
+    const newNfts = previewNfts.map((nft, i) => {
+      if (i === num) {
+        nft.isActive = !nft.isActive
+      }
+      return nft
+    })
+    setPreviewNfts(newNfts)
+  }
+
   return (
-    <Modal isOpen={open} onRequestClose={closeModal} style={customStyles}>
+    <Modal
+      isOpen={open}
+      onRequestClose={closeModal}
+      style={customStyles}
+      ariaHideApp={false}>
       <Root>
         <Contents>
           <Title>引き出すNFTを選択</Title>
           <Wrapper>
             <List>
-              {previewNfts.map((nft) => {
+              {previewNfts.map((nft, i) => {
                 return (
-                  <NftWrapper
-                    price={nft.info.price}
-                    src={nft.info.src}
-                    collection={nft.info.collectionName}
-                    name={nft.info.name}
-                    isActive={nft.isActive}
-                    selectedCount={selectedNfts.length}
-                    anchorPrice={-Infinity}
-                    setAnchorPrice={() => ''}
-                    delta={-Infinity}
-                    chainId={chainId}
-                    operation="NOPRICE"
-                  />
+                  <Item key={nft.info.id} onClick={() => select(i)}>
+                    <NftWrapper
+                      price={nft.info.price}
+                      src="/aceswap-girl.png"
+                      collection={nft.info.collectionName}
+                      name={nft.info.name}
+                      isActive={nft.isActive}
+                      selectedCount={selectedNfts.length}
+                      anchorPrice={-Infinity}
+                      setAnchorPrice={() => ''}
+                      delta={-Infinity}
+                      chainId={chainId}
+                      operation="NOPRICE"
+                    />
+                  </Item>
                 )
               })}
             </List>
@@ -106,16 +134,16 @@ export const ModalContent: FC<Props> = ({
           <Title>流動性報酬</Title>
           <StakeWrapper>
             <Info>
-              <Text>{stakeNFT}</Text>
+              <Text>{reward.toFixed(5)}</Text>
               <TokenWrapper>
                 <AstarLogo />
-                <TokenName>{tokenName}</TokenName>
+                <TokenName>ASTR</TokenName>
               </TokenWrapper>
             </Info>
           </StakeWrapper>
           <FixedButton
             label="流動性を解除する"
-            clickHandler={() => ''}
+            clickHandler={() => submit(selectedNfts.map((nft) => nft.info))}
             width="100%"
             height="64px"
           />

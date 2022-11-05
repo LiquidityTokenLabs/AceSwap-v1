@@ -8,7 +8,7 @@ import { Nft } from '@liqlab/utils/Domain/Nft'
 import { PoolInfo } from '@liqlab/utils/Domain/PoolInfo'
 
 import { showTransactionToast } from '../../components/Toast'
-import { poolContract } from '../../hook'
+import { nftContract, poolContract } from '../../hook'
 import { useSwapNFTforFT } from '../../hook/SwapNFTforFT'
 import { useTx } from '../../context/transaction'
 
@@ -75,6 +75,10 @@ const Page: FC = () => {
       address: user.get('ethAddress'), //ロックされているコントラクトの場所
       token_addresses: contractConfig.TokenAddress, //filterここのアドレスのNFTのみが表示される
     }
+    const accounts = await window.ethereum.request({
+      method: 'eth_requestAccounts',
+    })
+    const account = accounts[0]
     const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
@@ -83,17 +87,16 @@ const Page: FC = () => {
     const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
     const spread = Number(ethers.utils.formatEther(tmpSpread.toString()))
     const delta = Number(ethers.utils.formatEther(tmpDelta.toString()))
-    const results = tmpCtrItemList.result
+    const results = await nftContract.getAllHeldIds(account)
 
     const res = results!.map((nft) => {
-      const metadata = JSON.parse(nft.metadata!) || { name: '', src: '' }
       const r: Nft = {
-        id: nft.token_id,
+        id: String(nft),
         price: (price - delta) * (1 - spread),
-        collectionName: nft.name,
-        collectionAddr: nft.token_address,
-        name: metadata.name,
-        src: metadata.image,
+        collectionName: 'AceSwap Girl',
+        collectionAddr: contractConfig.TokenAddress,
+        name: `AceSwap Girl #${nft}`,
+        src: '',
       }
       return r
     })
