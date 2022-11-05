@@ -32,9 +32,11 @@ export const Board: FC<Props> = ({ items, poolInfo, submit, operation }) => {
     const n = selectedNfts.length
     const x = poolInfo.spotPrice
     const y = poolInfo.deltaNum
+    const totalBuyFee = n * x + (n * (n - 1) * y) / 2
+    const totalSellFee = n * (x - y) + (n * (n - 1) * y) / 2
     return operation === 'BUY'
-      ? n * x + ((n / 2) * (n + 1) - n) * y
-      : n * x - ((n / 2) * (n + 1) - n) * y
+      ? totalBuyFee
+      : totalSellFee * (1 - Number(poolInfo.spread))
   })()
 
   useEffect(() => {

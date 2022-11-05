@@ -10,17 +10,25 @@ import { PoolInfo } from '@liqlab/utils/Domain/PoolInfo'
 import { poolContract } from '../../hook'
 import { useSwapFTforNFT } from '../../hook/SwapFTforNFT'
 import { showTransactionToast } from '@liqlab/client/src/components/Toast'
+import { useTx } from '../../context/transaction'
 
 const Page: FC = () => {
   const contractConfig = GoerliConfig // TODO
   const Web3Api = useMoralisWeb3Api()
   const [nfts, setNfts] = useState<Nft[]>([])
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
-  const { send, transactionHash, error, success, loading } = useSwapFTforNFT()
+  const {
+    send: SwapFTforNFT,
+    transactionHash,
+    error,
+    success,
+    loading,
+  } = useSwapFTforNFT()
+  const { setIsLoading } = useTx()
 
   const getPoolInfo = useCallback(async () => {
     const tmpPoolInfo = await poolContract.getPoolInfo()
-    const curveType = poolContract.bondingCurve
+    const curveType = 'Linear'
     const delta = ethers.utils.formatEther(tmpPoolInfo.spread.toString())
     const spread = ethers.utils.formatEther(tmpPoolInfo.spread.toString())
     const spotPrice = Number(
@@ -75,13 +83,12 @@ const Page: FC = () => {
       return r
     })
     return res
-  }, [])
+  }, [Web3Api.account, poolContract])
 
   const submit = useCallback(
     async (selectedNfts: Nft[]) => {
       // TODO 引数のselectedNftsを購入する処理
-      const ids = ['3']
-      // const ids = selectedNfts.map((nft) => nft.id)
+      const ids = selectedNfts.map((nft) => nft.id)
       if (ids.length === 0 || !poolInfo) {
         return
       }
@@ -90,7 +97,7 @@ const Page: FC = () => {
       const feeETH = ethers.utils.formatEther(tmpFee.toString())
       const feeWei = ethers.utils.parseEther(feeETH.toString())
       console.log({ feeETH })
-      await send(
+      await SwapFTforNFT(
         contractConfig.Pool721Address,
         ids,
         contractConfig.ProtocolAddress,
@@ -100,18 +107,29 @@ const Page: FC = () => {
         }
       )
     },
-    [poolInfo]
+    [poolInfo, SwapFTforNFT]
   )
 
   useEffect(() => {
     if (success) {
-      console.log({ hash: transactionHash })
+      setTimeout(() => {
+        showTransactionToast(
+          'スワップ完了',
+          `https://goerli.etherscan.io/tx/${transactionHash}`,
+          'success'
+        )
+      }, 1000)
     } else if (error) {
       console.log({ error })
-    } else if (loading) {
-      console.log({ loading })
+      setTimeout(() => {
+        showTransactionToast(
+          'スワップ失敗',
+          `https://goerli.etherscan.io/tx/${transactionHash}`,
+          'error'
+        )
+      }, 1000)
     }
-  }, [success, error, loading])
+  }, [success, error])
 
   useEffect(() => {
     const f = async () => {
@@ -121,18 +139,11 @@ const Page: FC = () => {
       setPoolInfo(tmpPoolInfo)
     }
     f()
-  }, [])
+  }, [success])
 
-  // TODO Toastの見本
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     showTransactionToast(
-  //       'スワップ完了',
-  //       'https://docs.sss-symbol.com',
-  //       'error'
-  //     )
-  //   }, 1000)
-  // }, [])
+  useEffect(() => {
+    setIsLoading(loading)
+  }, [loading])
 
   if (poolInfo === null) {
     return <>LOADING</>

@@ -7,9 +7,10 @@ import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 import { Nft } from '@liqlab/utils/Domain/Nft'
 import { PoolInfo } from '@liqlab/utils/Domain/PoolInfo'
 
+import { showTransactionToast } from '../../components/Toast'
 import { poolContract } from '../../hook'
-import { useEmits } from '../../hook/EmitNFTforFT'
 import { useSwapNFTforFT } from '../../hook/SwapNFTforFT'
+import { useTx } from '../../context/transaction'
 
 const NFT_ABI = [
   'function approve(address to, uint256 tokenId) external',
@@ -30,13 +31,13 @@ const Page: FC = () => {
     success,
     loading,
   } = useSwapNFTforFT()
+  const { setIsLoading } = useTx()
   const provider = new ethers.providers.Web3Provider(window.ethereum)
   const signer = provider.getSigner()
-  const { emits } = useEmits()
 
   const getPoolInfo = useCallback(async () => {
     const tmpPoolInfo = await poolContract.getPoolInfo()
-    const curveType = poolContract.bondingCurve
+    const curveType = 'Linear'
     const delta = ethers.utils.formatEther(tmpPoolInfo.spread.toString())
     const spread = ethers.utils.formatEther(tmpPoolInfo.spread.toString())
     const spotPrice = Number(
@@ -77,14 +78,18 @@ const Page: FC = () => {
     const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
+    const tmpSpread = tmpPoolInfo.spread
+    const tmpDelta = tmpPoolInfo.delta
     const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
+    const spread = Number(ethers.utils.formatEther(tmpSpread.toString()))
+    const delta = Number(ethers.utils.formatEther(tmpDelta.toString()))
     const results = tmpCtrItemList.result
 
     const res = results!.map((nft) => {
       const metadata = JSON.parse(nft.metadata!) || { name: '', src: '' }
       const r: Nft = {
         id: nft.token_id,
-        price: price,
+        price: (price - delta) * (1 - spread),
         collectionName: nft.name,
         collectionAddr: nft.token_address,
         name: metadata.name,
@@ -93,7 +98,7 @@ const Page: FC = () => {
       return r
     })
     return res
-  }, [user])
+  }, [user, Web3Api.account])
 
   const submit = useCallback(
     async (selectedNfts: Nft[]) => {
@@ -127,18 +132,30 @@ const Page: FC = () => {
         }
       )
     },
-    [poolInfo, signer]
+    [poolInfo, SwapNFTforFT, signer]
   )
 
   useEffect(() => {
     if (success) {
       console.log({ hash: transactionHash })
+      setTimeout(() => {
+        showTransactionToast(
+          'スワップ完了',
+          `https://goerli.etherscan.io/tx/${transactionHash}`,
+          'success'
+        )
+      }, 1000)
     } else if (error) {
       console.log({ error })
-    } else if (loading) {
-      console.log({ loading })
+      setTimeout(() => {
+        showTransactionToast(
+          'スワップ失敗',
+          'https://docs.sss-symbol.com',
+          'error'
+        )
+      }, 1000)
     }
-  }, [success, error, loading])
+  }, [success, error])
 
   useEffect(() => {
     const f = async () => {
@@ -152,11 +169,11 @@ const Page: FC = () => {
       setPoolInfo(tmpPoolInfo)
     }
     f()
-  }, [])
+  }, [success])
 
   useEffect(() => {
-    console.log(emits)
-  }, [emits])
+    setIsLoading(loading)
+  }, [loading])
 
   if (poolInfo === null) {
     return <>LOADING</>

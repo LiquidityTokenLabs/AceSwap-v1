@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { FC, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { Pool } from '@liqlab/utils/Domain/Pool'
 import { Color } from '@liqlab/utils/Color'
 import { Card, FixedButton, Mode, ModeSelector } from '@liqlab/ui'
@@ -12,6 +12,10 @@ import { Histories } from './Histories'
 import { HiArrowNarrowLeft } from 'react-icons/hi'
 import { ModalContent } from './ModalContent'
 import { Nft } from '@liqlab/utils/Domain/Nft'
+import { useMoralisWeb3Api } from 'react-moralis'
+import { poolContract } from '../../hook'
+import { ethers } from 'ethers'
+import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 
 type Props = {
   pool: Pool
@@ -30,8 +34,11 @@ export const PoolDetail: FC<Props> = ({
   histories,
   pageBack,
 }) => {
+  const contractConfig = GoerliConfig
+  const Web3Api = useMoralisWeb3Api()
   const [mode, setMode] = useState<'INFO' | 'EVENT'>('INFO')
   const [openModal, setModalOpen] = useState(false)
+  const [nfts, setNfts] = useState<Nft[]>([])
 
   const modalClose = () => {
     setModalOpen(false)
@@ -58,64 +65,44 @@ export const PoolDetail: FC<Props> = ({
   ]
 
   // TODO ステークしているNFT一覧
-  const items: Nft[] = [
-    {
-      id: '1',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #1',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '2',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #2',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '3',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #3',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '4',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #4',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '5',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #5',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '6',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #6',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-    {
-      id: '7',
-      collectionName: 'CloneX',
-      collectionAddr: '',
-      name: 'CloneX #7',
-      src: 'https://1.bp.blogspot.com/-LFh4mfdjPSQ/VCIiwe10YhI/AAAAAAAAme0/J5m8xVexqqM/s800/animal_neko.png',
-      price: -Infinity,
-    },
-  ]
+  const fetchNFT = useCallback(async () => {
+    const options: {
+      chain: any
+      address: any
+      token_addresses: any
+    } = await {
+      chain: contractConfig.ChainName, //チェーン
+      address: contractConfig.Pool721Address, //ロックされているコントラクトの場所
+      token_addresses: contractConfig.TokenAddress, //filterここのアドレスのNFTのみが表示される
+    }
+    const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
+    const tmpPoolInfo = await poolContract.getPoolInfo()
+    const tmpSpotPrice = tmpPoolInfo.spotPrice
+    const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
+    const results = tmpCtrItemList.result
+
+    const res = results!.map((nft) => {
+      const metadata = JSON.parse(nft.metadata!)
+      const r: Nft = {
+        id: nft.token_id,
+        price: price,
+        collectionName: nft.name,
+        collectionAddr: nft.token_address,
+        name: metadata.name,
+        src: metadata.image,
+      }
+      return r
+    })
+    return res
+  }, [Web3Api.account, poolContract])
+
+  useEffect(() => {
+    const f = async () => {
+      const tmp = await fetchNFT()
+      setNfts(tmp)
+    }
+    f()
+  }, [])
 
   return (
     <Root>
@@ -170,7 +157,7 @@ export const PoolDetail: FC<Props> = ({
       <ModalContent
         closeModal={modalClose}
         open={openModal}
-        stakingNfts={items}
+        stakingNfts={nfts}
         pool={pool}
         tokenName={pool.name}
         stakeFT={stakeFT}

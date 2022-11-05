@@ -1,9 +1,7 @@
 import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 import { Contract, ethers, utils } from 'ethers'
-// import ROUTER_ABI from '@liqlab/contracts/artifacts/contracts/Router.sol/Router.json'
-import ROUTER_ABI from '../../contracts/Router.sol/Router.json'
-// import POOL721_ABI from '@liqlab/contracts/artifacts/contracts/pool/SingleNativeOPool.sol/SingleNativeOPool.json'
-import POOL721_ABI from '../../contracts/Pool721.sol/Pool721.json'
+import ROUTER_ABI from '@liqlab/contracts/artifacts/contracts/Router.sol/Router.json'
+import POOL721_ABI from '@liqlab/contracts/artifacts/contracts/pool/SingleNativeOPool.sol/SingleNativeOPool.json'
 import { Router } from '../../contracts/Router.sol'
 import { Pool721 } from '../../contracts/Pool721.sol'
 
@@ -21,3 +19,41 @@ export const poolContract = new ethers.Contract(
   POOL721_ABI.abi,
   signer
 ) as Pool721
+export const NFT_ABI = [
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'to',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'approve',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'operator',
+        type: 'address',
+      },
+      {
+        internalType: 'bool',
+        name: 'approved',
+        type: 'bool',
+      },
+    ],
+    name: 'setApprovalForAll',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+]

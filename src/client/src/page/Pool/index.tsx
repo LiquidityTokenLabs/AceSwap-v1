@@ -1,52 +1,53 @@
 import styled from '@emotion/styled'
 import { Pool } from '@liqlab/utils/Domain/Pool'
-import { FC, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { EmptyPool } from '../../components/EmptyPool'
 import { PoolList } from '../../components/PoolList'
 
 import { useNavigate } from 'react-router'
+import { poolContract } from '../../hook'
+import { ethers } from 'ethers'
 
 const Page: FC = () => {
   const [pools, setPools] = useState<Pool[]>([])
 
   const navi = useNavigate()
 
-  useEffect(() => {
-    // TODO get pool list
-    const newPools = [
+  const getPoolInfo = useCallback(async () => {
+    const tmpPoolInfo = await poolContract.getPoolInfo()
+    const curveType = 'Linear'
+    const delta = ethers.utils.formatEther(tmpPoolInfo.spread.toString())
+    const spread = ethers.utils.formatEther(tmpPoolInfo.spread.toString())
+    const spotPrice = Number(
+      ethers.utils.formatEther(tmpPoolInfo.spotPrice.toString())
+    )
+    const deltaNum = Number(
+      ethers.utils.formatEther(tmpPoolInfo.delta.toString())
+    )
+    const spreadNum = Number(
+      ethers.utils.formatEther(tmpPoolInfo.spread.toString())
+    )
+
+    return [
       {
         id: '1234',
-        name: 'CloneX',
-        curveType: 'Linear',
-        delta: '10%',
-        spread: '10%',
-        spotPrice: 0.1,
-        deltaNum: 0.01,
-        spreadNum: 0.8,
-      },
-      {
-        id: '1235',
-        name: 'CloneX',
-        curveType: 'Linear',
-        delta: '15%',
-        spread: '15%',
-        spotPrice: 0.1,
-        deltaNum: 0.01,
-        spreadNum: 0.8,
-      },
-      {
-        id: '1236',
-        name: 'CloneX',
-        curveType: 'Linear',
-        delta: '20%',
-        spread: '20%',
-        spotPrice: 0.1,
-        deltaNum: 0.01,
-        spreadNum: 0.8,
+        name: 'AceSwap Girl',
+        curveType: curveType,
+        delta: delta,
+        spread: spread,
+        spotPrice: spotPrice,
+        deltaNum: deltaNum,
+        spreadNum: spreadNum,
       },
     ]
+  }, [])
 
-    setPools(newPools)
+  useEffect(() => {
+    const f = async () => {
+      const tmpPoolInfo = await getPoolInfo()
+      setPools(tmpPoolInfo)
+    }
+    f()
   }, [])
 
   const movePage = (id: string) => {
