@@ -79,9 +79,8 @@ export interface Pool721Interface extends utils.Interface {
     "getCalcBuyInfo(uint256,uint256)": FunctionFragment;
     "getCalcSellInfo(uint256,uint256)": FunctionFragment;
     "getPoolInfo()": FunctionFragment;
-    "getUserInfo(address)": FunctionFragment;
-    "getUserStakeFTfee(address)": FunctionFragment;
-    "getUserStakeNFTfee(address)": FunctionFragment;
+    "getUserInfo()": FunctionFragment;
+    "getUserStakeFee()": FunctionFragment;
     "holdIds(uint256)": FunctionFragment;
     "isOtherStake()": FunctionFragment;
     "isPair()": FunctionFragment;
@@ -92,18 +91,19 @@ export interface Pool721Interface extends utils.Interface {
     "protocolFeeRatio()": FunctionFragment;
     "router()": FunctionFragment;
     "sellEventNum()": FunctionFragment;
+    "setDelta(uint256)": FunctionFragment;
     "setProtocolFeeRatio(uint256)": FunctionFragment;
     "setRouter(address)": FunctionFragment;
+    "setSpotPrice(uint256)": FunctionFragment;
+    "setSpread(uint256)": FunctionFragment;
     "stakeFT(uint256,address)": FunctionFragment;
     "stakeFTprice()": FunctionFragment;
     "stakeNFT(uint256[],address)": FunctionFragment;
     "stakeNFTprice()": FunctionFragment;
     "swapFTforNFT(uint256[],address)": FunctionFragment;
     "swapNFTforFT(uint256[],uint256,address)": FunctionFragment;
-    "totalFTfee()": FunctionFragment;
-    "totalFTpoint()": FunctionFragment;
-    "totalNFTfee()": FunctionFragment;
-    "totalNFTpoint()": FunctionFragment;
+    "totalFee()": FunctionFragment;
+    "userInfo()": FunctionFragment;
     "withdrawFT(uint256,uint256[],address)": FunctionFragment;
     "withdrawFee(address)": FunctionFragment;
     "withdrawNFT(uint256[],address)": FunctionFragment;
@@ -119,8 +119,7 @@ export interface Pool721Interface extends utils.Interface {
       | "getCalcSellInfo"
       | "getPoolInfo"
       | "getUserInfo"
-      | "getUserStakeFTfee"
-      | "getUserStakeNFTfee"
+      | "getUserStakeFee"
       | "holdIds"
       | "isOtherStake"
       | "isPair"
@@ -131,18 +130,19 @@ export interface Pool721Interface extends utils.Interface {
       | "protocolFeeRatio"
       | "router"
       | "sellEventNum"
+      | "setDelta"
       | "setProtocolFeeRatio"
       | "setRouter"
+      | "setSpotPrice"
+      | "setSpread"
       | "stakeFT"
       | "stakeFTprice"
       | "stakeNFT"
       | "stakeNFTprice"
       | "swapFTforNFT"
       | "swapNFTforFT"
-      | "totalFTfee"
-      | "totalFTpoint"
-      | "totalNFTfee"
-      | "totalNFTpoint"
+      | "totalFee"
+      | "userInfo"
       | "withdrawFT"
       | "withdrawFee"
       | "withdrawNFT"
@@ -178,15 +178,11 @@ export interface Pool721Interface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getUserInfo",
-    values: [PromiseOrValue<string>]
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getUserStakeFTfee",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getUserStakeNFTfee",
-    values: [PromiseOrValue<string>]
+    functionFragment: "getUserStakeFee",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "holdIds",
@@ -222,12 +218,24 @@ export interface Pool721Interface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setDelta",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setProtocolFeeRatio",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "setRouter",
     values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setSpotPrice",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setSpread",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "stakeFT",
@@ -257,22 +265,8 @@ export interface Pool721Interface extends utils.Interface {
       PromiseOrValue<string>
     ]
   ): string;
-  encodeFunctionData(
-    functionFragment: "totalFTfee",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "totalFTpoint",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "totalNFTfee",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "totalNFTpoint",
-    values?: undefined
-  ): string;
+  encodeFunctionData(functionFragment: "totalFee", values?: undefined): string;
+  encodeFunctionData(functionFragment: "userInfo", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "withdrawFT",
     values: [
@@ -320,11 +314,7 @@ export interface Pool721Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getUserStakeFTfee",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getUserStakeNFTfee",
+    functionFragment: "getUserStakeFee",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "holdIds", data: BytesLike): Result;
@@ -352,11 +342,17 @@ export interface Pool721Interface extends utils.Interface {
     functionFragment: "sellEventNum",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setDelta", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setProtocolFeeRatio",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setRouter", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setSpotPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "setSpread", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "stakeFT", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "stakeFTprice",
@@ -375,19 +371,8 @@ export interface Pool721Interface extends utils.Interface {
     functionFragment: "swapNFTforFT",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "totalFTfee", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "totalFTpoint",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "totalNFTfee",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "totalNFTpoint",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "totalFee", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "userInfo", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdrawFT", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "withdrawFee",
@@ -453,19 +438,10 @@ export interface Pool721 extends BaseContract {
     ): Promise<[BasePool.PoolInfoStructOutput]>;
 
     getUserInfo(
-      _user: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[BasePool.UserInfoStructOutput]>;
 
-    getUserStakeFTfee(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { _userFee: BigNumber }>;
-
-    getUserStakeNFTfee(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { _userFee: BigNumber }>;
+    getUserStakeFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     holdIds(
       arg0: PromiseOrValue<BigNumberish>,
@@ -506,6 +482,11 @@ export interface Pool721 extends BaseContract {
 
     sellEventNum(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    setDelta(
+      _newDelta: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setProtocolFeeRatio(
       _newProtocolFeeRatio: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -513,6 +494,16 @@ export interface Pool721 extends BaseContract {
 
     setRouter(
       _newRouter: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setSpotPrice(
+      _newSpotPrice: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setSpread(
+      _newSpread: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -545,13 +536,19 @@ export interface Pool721 extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    totalFTfee(overrides?: CallOverrides): Promise<[BigNumber]>;
+    totalFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    totalFTpoint(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    totalNFTfee(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    totalNFTpoint(overrides?: CallOverrides): Promise<[BigNumber]>;
+    userInfo(
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        initBuyNum: BigNumber;
+        initSellNum: BigNumber;
+        initSellAmount: BigNumber;
+        totalNFTpoint: BigNumber;
+        totalFTpoint: BigNumber;
+      }
+    >;
 
     withdrawFT(
       _userSellNum: PromiseOrValue<BigNumberish>,
@@ -597,19 +594,10 @@ export interface Pool721 extends BaseContract {
   ): Promise<BasePool.PoolInfoStructOutput>;
 
   getUserInfo(
-    _user: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<BasePool.UserInfoStructOutput>;
 
-  getUserStakeFTfee(
-    _user: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getUserStakeNFTfee(
-    _user: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  getUserStakeFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   holdIds(
     arg0: PromiseOrValue<BigNumberish>,
@@ -650,6 +638,11 @@ export interface Pool721 extends BaseContract {
 
   sellEventNum(overrides?: CallOverrides): Promise<BigNumber>;
 
+  setDelta(
+    _newDelta: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setProtocolFeeRatio(
     _newProtocolFeeRatio: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -657,6 +650,16 @@ export interface Pool721 extends BaseContract {
 
   setRouter(
     _newRouter: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setSpotPrice(
+    _newSpotPrice: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setSpread(
+    _newSpread: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -689,13 +692,19 @@ export interface Pool721 extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  totalFTfee(overrides?: CallOverrides): Promise<BigNumber>;
+  totalFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-  totalFTpoint(overrides?: CallOverrides): Promise<BigNumber>;
-
-  totalNFTfee(overrides?: CallOverrides): Promise<BigNumber>;
-
-  totalNFTpoint(overrides?: CallOverrides): Promise<BigNumber>;
+  userInfo(
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      initBuyNum: BigNumber;
+      initSellNum: BigNumber;
+      initSellAmount: BigNumber;
+      totalNFTpoint: BigNumber;
+      totalFTpoint: BigNumber;
+    }
+  >;
 
   withdrawFT(
     _userSellNum: PromiseOrValue<BigNumberish>,
@@ -741,19 +750,10 @@ export interface Pool721 extends BaseContract {
     ): Promise<BasePool.PoolInfoStructOutput>;
 
     getUserInfo(
-      _user: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BasePool.UserInfoStructOutput>;
 
-    getUserStakeFTfee(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getUserStakeNFTfee(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    getUserStakeFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     holdIds(
       arg0: PromiseOrValue<BigNumberish>,
@@ -794,6 +794,11 @@ export interface Pool721 extends BaseContract {
 
     sellEventNum(overrides?: CallOverrides): Promise<BigNumber>;
 
+    setDelta(
+      _newDelta: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setProtocolFeeRatio(
       _newProtocolFeeRatio: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -801,6 +806,16 @@ export interface Pool721 extends BaseContract {
 
     setRouter(
       _newRouter: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setSpotPrice(
+      _newSpotPrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setSpread(
+      _newSpread: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -833,13 +848,19 @@ export interface Pool721 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    totalFTfee(overrides?: CallOverrides): Promise<BigNumber>;
+    totalFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    totalFTpoint(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalNFTfee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalNFTpoint(overrides?: CallOverrides): Promise<BigNumber>;
+    userInfo(
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        initBuyNum: BigNumber;
+        initSellNum: BigNumber;
+        initSellAmount: BigNumber;
+        totalNFTpoint: BigNumber;
+        totalFTpoint: BigNumber;
+      }
+    >;
 
     withdrawFT(
       _userSellNum: PromiseOrValue<BigNumberish>,
@@ -885,20 +906,9 @@ export interface Pool721 extends BaseContract {
 
     getPoolInfo(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getUserInfo(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    getUserInfo(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getUserStakeFTfee(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getUserStakeNFTfee(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    getUserStakeFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     holdIds(
       arg0: PromiseOrValue<BigNumberish>,
@@ -929,6 +939,11 @@ export interface Pool721 extends BaseContract {
 
     sellEventNum(overrides?: CallOverrides): Promise<BigNumber>;
 
+    setDelta(
+      _newDelta: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setProtocolFeeRatio(
       _newProtocolFeeRatio: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -936,6 +951,16 @@ export interface Pool721 extends BaseContract {
 
     setRouter(
       _newRouter: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setSpotPrice(
+      _newSpotPrice: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setSpread(
+      _newSpread: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -968,13 +993,9 @@ export interface Pool721 extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    totalFTfee(overrides?: CallOverrides): Promise<BigNumber>;
+    totalFee(overrides?: CallOverrides): Promise<BigNumber>;
 
-    totalFTpoint(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalNFTfee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalNFTpoint(overrides?: CallOverrides): Promise<BigNumber>;
+    userInfo(overrides?: CallOverrides): Promise<BigNumber>;
 
     withdrawFT(
       _userSellNum: PromiseOrValue<BigNumberish>,
@@ -1018,20 +1039,9 @@ export interface Pool721 extends BaseContract {
 
     getPoolInfo(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getUserInfo(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    getUserInfo(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getUserStakeFTfee(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getUserStakeNFTfee(
-      _user: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    getUserStakeFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     holdIds(
       arg0: PromiseOrValue<BigNumberish>,
@@ -1062,6 +1072,11 @@ export interface Pool721 extends BaseContract {
 
     sellEventNum(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    setDelta(
+      _newDelta: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     setProtocolFeeRatio(
       _newProtocolFeeRatio: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1069,6 +1084,16 @@ export interface Pool721 extends BaseContract {
 
     setRouter(
       _newRouter: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setSpotPrice(
+      _newSpotPrice: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setSpread(
+      _newSpread: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1101,13 +1126,9 @@ export interface Pool721 extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    totalFTfee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    totalFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    totalFTpoint(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    totalNFTfee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    totalNFTpoint(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    userInfo(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     withdrawFT(
       _userSellNum: PromiseOrValue<BigNumberish>,
