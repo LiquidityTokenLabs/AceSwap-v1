@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "typechain:generateRouter": "yarn typechain --target=ethers-v5 ./contracts/Router.sol/Router.json --out-dir=./contracts/Router.sol",
-    "typechain:generatePool": "yarn typechain --target=ethers-v5 ./contracts/Pool721.sol/Pool721.json --out-dir=./contracts/Pool721.sol"
+    "typechain:generatePool": "yarn typechain --target=ethers-v5 ./contracts/Pool721.sol/Pool721.json --out-dir=./contracts/Pool721.sol",
+    "typechain:generateNFT": "yarn typechain --target=ethers-v5 ./contracts/SampleNFT.sol/SampleNFT.json --out-dir=./contracts/SampleNFT.sol"
   },
   "dependencies": {
     "@typechain/ethers-v5": "^10.1.0",
