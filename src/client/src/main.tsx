@@ -6,9 +6,9 @@ import { DAppProvider, Goerli } from '@usedapp/core'
 import { TxProvider } from './context/transaction'
 
 const config = {
-  readOnlyChainId: Goerli.chainId,
+  readOnlyChainId: 592,
   readOnlyUrls: {
-    [Goerli.chainId]:
+    [592]:
       'https://eth-goerli.g.alchemy.com/v2/OYnMi37YD5FIQHqIFIrbftfKI2DCUwS_',
   },
 }
