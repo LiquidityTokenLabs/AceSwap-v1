@@ -87,7 +87,7 @@ export const Board: FC<Props> = ({ items, poolInfo, submit, operation }) => {
           })}
         </Content>
         <Footer>
-          <TotalPrice>Total Fee {totalPrice} ETH</TotalPrice>
+          <TotalPrice>Total Fee {totalPrice.toFixed(3)} ASTR</TotalPrice>
           <PrimaryButton
             label={operationText}
             clickHandler={() => submit(selectedNfts.map((nft) => nft.info))}
