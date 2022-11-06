@@ -20,7 +20,5 @@ This mutual repetition improves liquidity.
 
 With 0% protocol fees, prices are lower than other marketplaces, which encourages the buying and selling of NFTs. In addition, despite the 0% creator royalty, creators receive 16% of the total volume of their NFT collection, making it the most generous of all marketplaces in terms of return to creators.
 
-Translated with www.DeepL.com/Translator (free version)
-
 # 技術スタック
 Vite React, Solidity, Ethers.js, Vercel
