@@ -16,11 +16,10 @@ export type Chain = {
 }
 
 type Props = {
-  currentChainId: number
-  chains: Chain[]
+  currentChainId: number | undefined
 }
 
-export const NetworkSelector: FC<Props> = ({ currentChainId, chains }) => {
+export const NetworkSelector: FC<Props> = ({ currentChainId }) => {
   const changeChain = async (id: number) => {
     try {
       await window.ethereum.request({
@@ -46,8 +45,6 @@ export const NetworkSelector: FC<Props> = ({ currentChainId, chains }) => {
           params: [params],
         })
       } catch (Exeption) {}
-    } finally {
-      window.location.reload() // TODO
     }
   }
 
@@ -68,7 +65,6 @@ export const NetworkSelector: FC<Props> = ({ currentChainId, chains }) => {
         <SwitchNetwork onClick={() => changeChain(592)}>
           <IoWarningOutline />
           <Text>Switch Network</Text>
-          <FaAngleDown />
         </SwitchNetwork>
       </Root>
     )
@@ -80,7 +76,7 @@ const SwitchNetwork = styled('div')({
   color: Color.white.pure,
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
+  justifyContent: 'space-around',
   width: '200px',
   height: '50px',
   padding: '8px 16px',
@@ -118,6 +114,7 @@ const Img = styled('div')({
 const Text = styled('div')({
   fontSize: '16px',
   minWidth: '100px',
+  cursor: 'pointer',
 })
 
 const Root = styled('div')({
