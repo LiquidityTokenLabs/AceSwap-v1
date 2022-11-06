@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { Color } from '@liqlab/utils/Color'
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
+import { poolContract } from '../../hook'
 
 type Props = {
   curveType: string
@@ -15,8 +16,19 @@ export const PoolSetting: FC<Props> = ({
   delta,
   spread,
 }) => {
-  const buyNum = 0
-  const sellNum = 1
+  const [buyNum, setBuyNum] = useState('0')
+  const [sellNum, setSellNum] = useState('0')
+
+  useEffect(() => {
+    const f = async () => {
+      const poolInfo = await poolContract.getPoolInfo()
+      const buy = poolInfo.buyNum
+      const sell = poolInfo.sellNum
+      setBuyNum(String(buy))
+      setSellNum(String(sell))
+    }
+    f()
+  }, [])
   return (
     <CardContents>
       <CardHeader>Pool Setting</CardHeader>
