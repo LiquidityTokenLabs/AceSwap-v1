@@ -7,10 +7,10 @@ import { Nft } from '@liqlab/utils/Domain/Nft'
 import { PoolInfo } from '@liqlab/utils/Domain/PoolInfo'
 
 import { showTransactionToast } from '@liqlab/client/src/components/Toast'
+import { useEthers } from '@usedapp/core'
 import { useTx } from '../../context/transaction'
 import { poolContract } from '../../hook'
 import { useSwapFTforNFT } from '../../hook/SwapFTforNFT'
-import { useEthers } from '@usedapp/core'
 
 const Page: FC = () => {
   const contractConfig = GoerliConfig // TODO
