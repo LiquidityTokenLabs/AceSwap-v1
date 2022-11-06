@@ -2,7 +2,7 @@
 ![アセット 14@4x](https://user-images.githubusercontent.com/51313744/200154649-a7559efe-30d7-4ac5-829b-fa4fa95a7264.png)
 
 
-# AceSwaとは？
+# AceSwapとは？
 AceSwapはAstar Network上に構築された、NFTの価格が需要と供給によって決まるNFT AMM プロトコルです。NFTの流動性プールを作ることで、価格の急騰や暴落などの不健全な成長を抑制(プライスプロテクション)し、NFTの流動性を増加させ、NFTの成長を支援するプロトコルです。
 
 コレクションオーナーが運営保有のNFTの一部をAceSwap上にステーキングすることで、そのNFTをリストしていき、1つNFTが買われると自動で1つそのNFTコレクションの売り枠を作ります。
