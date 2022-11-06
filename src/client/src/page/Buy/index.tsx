@@ -10,9 +10,11 @@ import { showTransactionToast } from '@liqlab/client/src/components/Toast'
 import { useTx } from '../../context/transaction'
 import { poolContract } from '../../hook'
 import { useSwapFTforNFT } from '../../hook/SwapFTforNFT'
+import { useEthers } from '@usedapp/core'
 
 const Page: FC = () => {
   const contractConfig = GoerliConfig // TODO
+  const { account } = useEthers()
   const [nfts, setNfts] = useState<Nft[]>([])
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
   const {
@@ -22,7 +24,7 @@ const Page: FC = () => {
     success,
     loading,
   } = useSwapFTforNFT()
-  const { setIsLoading } = useTx()
+  const { isLoading, setIsLoading } = useTx()
 
   const getPoolInfo = useCallback(async () => {
     const tmpPoolInfo = await poolContract.getPoolInfo()
@@ -125,8 +127,10 @@ const Page: FC = () => {
       const tmpPoolInfo = await getPoolInfo()
       setPoolInfo(tmpPoolInfo)
     }
-    f()
-  }, [success])
+    if (account) {
+      f()
+    }
+  }, [success, account])
 
   useEffect(() => {
     setIsLoading(loading)
