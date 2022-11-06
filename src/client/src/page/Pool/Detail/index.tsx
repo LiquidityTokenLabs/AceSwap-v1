@@ -32,7 +32,7 @@ const Page: FC = () => {
 
     return {
       id: '1234',
-      name: 'AceSwap Girl',
+      name: 'ASG',
       curveType: curveType,
       delta: delta,
       spread: spread,
