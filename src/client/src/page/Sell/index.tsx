@@ -68,20 +68,10 @@ const Page: FC = () => {
   const fetchNFT = useCallback(async () => {
     if (!user) return
 
-    const options: {
-      chain: any
-      address: any
-      token_addresses: any
-    } = await {
-      chain: contractConfig.ChainName, //チェーン
-      address: user.get('ethAddress'), //ロックされているコントラクトの場所
-      token_addresses: contractConfig.TokenAddress, //filterここのアドレスのNFTのみが表示される
-    }
     const accounts = await window.ethereum.request({
       method: 'eth_requestAccounts',
     })
     const account = accounts[0]
-    const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
     const tmpSpread = tmpPoolInfo.spread

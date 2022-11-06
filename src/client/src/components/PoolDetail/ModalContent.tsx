@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
-import { AstarLogo, EthLogo, FixedButton } from '@liqlab/ui'
+import { AstarLogo, FixedButton } from '@liqlab/ui'
 import { Color } from '@liqlab/utils/Color'
 import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 import { Nft } from '@liqlab/utils/Domain/Nft'
 import { Pool } from '@liqlab/utils/Domain/Pool'
-import { useCallback, useEffect } from 'react'
-import { FC, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 
 import Modal from 'react-modal'
 import { useTx } from '../../context/transaction'

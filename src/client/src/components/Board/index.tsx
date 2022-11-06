@@ -1,9 +1,8 @@
 import styled from '@emotion/styled'
-import { Card, Frame, PrimaryButton } from '@liqlab/ui'
+import { Card, PrimaryButton } from '@liqlab/ui'
 import { Color } from '@liqlab/utils/Color'
 import { Nft } from '@liqlab/utils/Domain/Nft'
 import { Pool } from '@liqlab/utils/Domain/Pool'
-import { PoolInfo } from '@liqlab/utils/Domain/PoolInfo'
 import { FC, useEffect, useState } from 'react'
 import { NftWrapper } from '../NftWrapper'
 

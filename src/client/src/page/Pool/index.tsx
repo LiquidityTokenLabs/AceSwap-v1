@@ -4,11 +4,11 @@ import { FC, useCallback, useEffect, useState } from 'react'
 import { EmptyPool } from '../../components/EmptyPool'
 import { PoolList } from '../../components/PoolList'
 
-import { useNavigate } from 'react-router'
-import { poolContract } from '../../hook'
+import { PrimaryButton } from '@liqlab/ui'
 import { ethers } from 'ethers'
 import { useMoralis } from 'react-moralis'
-import { PrimaryButton } from '@liqlab/ui'
+import { useNavigate } from 'react-router'
+import { poolContract } from '../../hook'
 
 const Page: FC = () => {
   const { user, isAuthenticated } = useMoralis()

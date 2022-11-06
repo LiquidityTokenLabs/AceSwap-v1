@@ -1,9 +1,7 @@
 import styled from '@emotion/styled'
-import { Logo } from '@liqlab/ui'
+import { AstarLogo } from '@liqlab/ui'
 import { Color } from '@liqlab/utils/Color'
-import { getBase64Src } from '@liqlab/utils/Config/TokenConfig'
 import { FC } from 'react'
-import { EthLogo, AstarLogo } from '@liqlab/ui'
 
 type Props = {
   id: string

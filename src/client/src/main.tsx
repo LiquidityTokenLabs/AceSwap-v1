@@ -1,9 +1,9 @@
+import { DAppProvider } from '@usedapp/core'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Router } from './Router'
-import './index.css'
-import { DAppProvider, Goerli } from '@usedapp/core'
 import { TxProvider } from './context/transaction'
+import './index.css'
+import { Router } from './Router'
 
 const config = {
   readOnlyChainId: 592,

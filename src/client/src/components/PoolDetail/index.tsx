@@ -11,7 +11,6 @@ import { Reward } from './Reward'
 
 import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 import { Nft } from '@liqlab/utils/Domain/Nft'
-import { ethers } from 'ethers'
 import { HiArrowNarrowLeft } from 'react-icons/hi'
 import { poolContract } from '../../hook'
 import { ModalContent } from './ModalContent'
