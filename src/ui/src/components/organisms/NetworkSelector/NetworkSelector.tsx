@@ -51,13 +51,13 @@ export const NetworkSelector: FC<Props> = ({ currentChainId, chains }) => {
     }
   }
 
-  if (currentChainId == 592) {
+  if (currentChainId === 592) {
     return (
       <Root>
         <CurrentChain>
           <NetworkWrapper>
             <Logo image={getBase64Src(`${currentChainId}`)} />
-            <Text>ASTAR</Text>
+            <Text>Astar</Text>
           </NetworkWrapper>
         </CurrentChain>
       </Root>
