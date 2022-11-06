@@ -7,13 +7,13 @@ import { getBase64Src } from '@liqlab/utils/Config/TokenConfig'
 import { useNavigate } from 'react-router'
 
 type Props = {
-  pool: Pool
-  movePage: (id: string) => void
+  pool: Pool | undefined
+  movePage: (id: string | undefined) => void
 }
 
 export const PoolList: FC<Props> = ({ pool, movePage }) => {
   const navi = useNavigate()
-  const src = getBase64Src(pool.id)
+  const src = getBase64Src(pool?.id)
 
   // TODO プールのIDを使ってページ遷移
   // FIXME コンポーネントの外で定義
@@ -29,11 +29,11 @@ export const PoolList: FC<Props> = ({ pool, movePage }) => {
       <Card padding="8px">
         <ContentTitle>Pool (1)</ContentTitle>
         <PoolWrapper>
-          <Item key={pool.id} onClick={() => movePage(pool.id)}>
+          <Item key={pool?.id} onClick={() => movePage(pool?.id)}>
             <Flexleft gap="8px">
               <Logo image={src} />
               <Text color={Color.text.primary} size="20px">
-                {pool.name}
+                {pool?.name}
               </Text>
               <Chip label={'x3'} />
             </Flexleft>
@@ -43,7 +43,7 @@ export const PoolList: FC<Props> = ({ pool, movePage }) => {
                   Bonding Curve:
                 </Text>
                 <Text color={Color.text.primary} size="16px">
-                  {pool.curveType}
+                  {pool?.curveType}
                 </Text>
               </Flexleft>
               <Flexleft gap="0px">
@@ -51,7 +51,7 @@ export const PoolList: FC<Props> = ({ pool, movePage }) => {
                   Delta:
                 </Text>
                 <Text color={Color.text.primary} size="16px">
-                  {pool.delta}
+                  {pool?.delta}
                 </Text>
               </Flexleft>
               <Flexleft gap="0px">
@@ -59,7 +59,7 @@ export const PoolList: FC<Props> = ({ pool, movePage }) => {
                   Spread:
                 </Text>
                 <Text color={Color.text.primary} size="16px">
-                  {pool.spread}
+                  {pool?.spread}
                 </Text>
               </Flexleft>
             </Flexleft>

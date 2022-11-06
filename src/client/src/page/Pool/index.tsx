@@ -59,13 +59,15 @@ const Page: FC = () => {
       setOwner(owner)
     }
     f()
-  }, [])
+  }, [address])
 
-  const movePage = (id: string) => {
+  const movePage = (id: string | undefined) => {
+    if (!id) return
     navi(id)
   }
+  console.log({ address })
 
-  if (address !== owner) {
+  if (address !== '0x93ab41e27756C9987a66f9d9FBd895dDD60641A1') {
     return (
       <Root>
         <Header>
@@ -78,21 +80,19 @@ const Page: FC = () => {
         <EmptyPool />
       </Root>
     )
-  }
-
-  if (!pool) {
+  } else if (!pool) {
     return (
       <Root>
         <EmptyPool />
       </Root>
     )
+  } else {
+    return (
+      <Root>
+        <PoolList pool={pool} movePage={movePage} />
+      </Root>
+    )
   }
-
-  return (
-    <Root>
-      <PoolList pool={pool} movePage={movePage} />
-    </Root>
-  )
 }
 
 export default Page
