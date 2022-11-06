@@ -1,27 +1,22 @@
 import styled from '@emotion/styled'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 import {
-  Chain,
+  ConnectWallet,
   Menu,
   MenuItem,
   Mode,
   ModeSelector,
   NetworkSelector,
-  YomiSwapLogo,
-  ConnectWallet,
-  Status,
 } from '@liqlab/ui'
 import { Color } from '@liqlab/utils/Color'
 
 type Props = {
   modes: Mode[]
   menuItems: MenuItem[]
-  currentChainId: number
-  chains: Chain[]
+  currentChainId: number | undefined
   connectStatus: {
-    status: Status
-    address: string
+    address: string | undefined
     connection: () => void
   }
 }
@@ -30,7 +25,6 @@ export const Header: FC<Props> = ({
   modes,
   menuItems,
   currentChainId,
-  chains,
   connectStatus,
 }) => {
   return (
@@ -43,11 +37,10 @@ export const Header: FC<Props> = ({
       </CenterNav>
       <RightNav>
         <NetworkSelectorWrapper>
-          <NetworkSelector currentChainId={currentChainId} chains={chains} />
+          <NetworkSelector currentChainId={currentChainId} />
         </NetworkSelectorWrapper>
         <WalletConnectWrapper>
           <ConnectWallet
-            status={connectStatus.status}
             address={connectStatus.address}
             clickHandler={connectStatus.connection}
           />
