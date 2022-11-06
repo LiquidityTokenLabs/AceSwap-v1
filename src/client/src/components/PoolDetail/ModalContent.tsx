@@ -8,8 +8,10 @@ import { useCallback, useEffect } from 'react'
 import { FC, useState } from 'react'
 
 import Modal from 'react-modal'
+import { useTx } from '../../context/transaction'
 import { useWithdrawNFT } from '../../hook/WithdrawNFT'
 import { NftWrapper } from '../NftWrapper'
+import { showTransactionToast } from '../Toast'
 
 const customStyles = {
   content: {
@@ -54,7 +56,14 @@ export const ModalContent: FC<Props> = ({
 }) => {
   const contractConfig = GoerliConfig
   const chainId = 5
-  const { send: WithdrawNFT, success, error, loading } = useWithdrawNFT()
+  const {
+    send: WithdrawNFT,
+    success,
+    error,
+    loading,
+    transactionHash,
+  } = useWithdrawNFT()
+  const { setIsLoading } = useTx()
 
   const [previewNfts, setPreviewNfts] = useState<PreviewNft[]>([])
   const selectedNfts = previewNfts.filter((nft) => nft.isActive)
@@ -75,7 +84,32 @@ export const ModalContent: FC<Props> = ({
       }
     })
     setPreviewNfts(newNfts)
-  }, [stakingNfts])
+  }, [stakingNfts, success])
+
+  useEffect(() => {
+    if (success) {
+      setTimeout(() => {
+        showTransactionToast(
+          'スワップ完了',
+          `https://goerli.etherscan.io/tx/${transactionHash}`,
+          'success'
+        )
+      }, 1000)
+    } else if (error) {
+      console.log({ error })
+      setTimeout(() => {
+        showTransactionToast(
+          'スワップ失敗',
+          `https://goerli.etherscan.io/tx/${transactionHash}`,
+          'error'
+        )
+      }, 1000)
+    }
+  }, [success, error])
+
+  useEffect(() => {
+    setIsLoading(loading)
+  }, [loading])
 
   const select = (num: number) => {
     const newNfts = previewNfts.map((nft, i) => {
