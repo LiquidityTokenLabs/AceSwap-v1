@@ -8,8 +8,8 @@ import { Pool } from '@liqlab/utils/Domain/Pool'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { AiOutlineArrowLeft } from 'react-icons/ai'
 
+import { useEthers } from '@usedapp/core'
 import { Contract, ethers } from 'ethers'
-import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { useTx } from '../../context/transaction'
 import { nftContract, NFT_ABI, poolContract } from '../../hook'
 import { useStakeNFT } from '../../hook/StakeNFT'
@@ -19,16 +19,15 @@ import { StakeNFT } from './StakeNFT'
 
 type Props = {
   pageBack: () => void
-  poolInfo: Pool
+  poolInfo: Pool | undefined
 }
 
 export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
   const contractConfig = GoerliConfig
-  const { user } = useMoralis()
+  const { account } = useEthers()
   const [stakeMode, setStakeMode] = useState<'NFT' | 'FT'>('NFT')
-  const Web3Api = useMoralisWeb3Api()
   const [stakePrice, setStakePrice] = useState(1.05)
-  const [delta, setDelta] = useState(Number(poolInfo.delta))
+  const [delta, setDelta] = useState(Number(poolInfo?.delta))
   const [nfts, setNfts] = useState<Nft[]>([])
   const { send, success, error, loading, transactionHash } = useStakeNFT()
   const { setIsLoading } = useTx()
@@ -37,11 +36,7 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
 
   // TODO ユーザーが所持しているNFTを取得
   const fetchNFT = useCallback(async () => {
-    if (!user) return
-    const accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts',
-    })
-    const account = accounts[0]
+    if (!account) return
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
     const tmpSpread = tmpPoolInfo.spread
@@ -52,7 +47,7 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
     const res = results!.map((nft) => {
       const r: Nft = {
         id: String(nft),
-        price: price * (1 - spread),
+        price: -Infinity,
         collectionName: 'AceSwap Girl',
         collectionAddr: contractConfig.TokenAddress,
         name: `AceSwap Girl #${nft}`,
@@ -61,7 +56,7 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
       return r
     })
     return res
-  }, [user, Web3Api.account])
+  }, [account])
 
   // TODO staking nft
   const stakeNft = async (nfts: Nft[]) => {
@@ -110,8 +105,10 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
         setNfts(tmp)
       }
     }
-    f()
-  }, [success])
+    if (account) {
+      f()
+    }
+  }, [success, account])
 
   useEffect(() => {
     setIsLoading(loading)
@@ -128,12 +125,12 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
       </Header>
       <Contents>
         <Left>
-          <TokenName>{poolInfo.name}</TokenName>
+          <TokenName>{poolInfo?.name}</TokenName>
           <StakedInfo>
             <Text>stake</Text>
             <Wrapper>
               <StakedToken>
-                <Logo image={getBase64Src(poolInfo.id)} />
+                <Logo image={getBase64Src(poolInfo?.id)} />
                 <Text>1</Text>
               </StakedToken>
               <StakedToken>
@@ -145,21 +142,21 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
           <SettingWrapper>
             <Settings>
               <Text>Bonding Curve</Text>
-              <Text>{poolInfo.curveType}</Text>
+              <Text>{poolInfo?.curveType}</Text>
             </Settings>
             <Settings>
               <Text>spot price</Text>
-              <Text>{poolInfo.spotPrice}</Text>
+              <Text>{poolInfo?.spotPrice}</Text>
             </Settings>
           </SettingWrapper>
           <SettingWrapper>
             <Settings>
               <Text>delta</Text>
-              <Text>{poolInfo.deltaNum}</Text>
+              <Text>{poolInfo?.deltaNum}</Text>
             </Settings>
             <Settings>
               <Text>spread</Text>
-              <Text>{poolInfo.spreadNum}</Text>
+              <Text>{poolInfo?.spreadNum}</Text>
             </Settings>
           </SettingWrapper>
           <StakeSelector>
