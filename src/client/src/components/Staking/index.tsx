@@ -19,7 +19,7 @@ import { StakeNFT } from './StakeNFT'
 
 type Props = {
   pageBack: () => void
-  poolInfo: Pool
+  poolInfo: Pool | undefined
 }
 
 export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
@@ -28,7 +28,7 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
   const [stakeMode, setStakeMode] = useState<'NFT' | 'FT'>('NFT')
   const Web3Api = useMoralisWeb3Api()
   const [stakePrice, setStakePrice] = useState(1.05)
-  const [delta, setDelta] = useState(Number(poolInfo.delta))
+  const [delta, setDelta] = useState(Number(poolInfo?.delta))
   const [nfts, setNfts] = useState<Nft[]>([])
   const { send, success, error, loading, transactionHash } = useStakeNFT()
   const { setIsLoading } = useTx()
@@ -128,12 +128,12 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
       </Header>
       <Contents>
         <Left>
-          <TokenName>{poolInfo.name}</TokenName>
+          <TokenName>{poolInfo?.name}</TokenName>
           <StakedInfo>
             <Text>stake</Text>
             <Wrapper>
               <StakedToken>
-                <Logo image={getBase64Src(poolInfo.id)} />
+                <Logo image={getBase64Src(poolInfo?.id)} />
                 <Text>1</Text>
               </StakedToken>
               <StakedToken>
@@ -145,21 +145,21 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
           <SettingWrapper>
             <Settings>
               <Text>Bonding Curve</Text>
-              <Text>{poolInfo.curveType}</Text>
+              <Text>{poolInfo?.curveType}</Text>
             </Settings>
             <Settings>
               <Text>spot price</Text>
-              <Text>{poolInfo.spotPrice}</Text>
+              <Text>{poolInfo?.spotPrice}</Text>
             </Settings>
           </SettingWrapper>
           <SettingWrapper>
             <Settings>
               <Text>delta</Text>
-              <Text>{poolInfo.deltaNum}</Text>
+              <Text>{poolInfo?.deltaNum}</Text>
             </Settings>
             <Settings>
               <Text>spread</Text>
-              <Text>{poolInfo.spreadNum}</Text>
+              <Text>{poolInfo?.spreadNum}</Text>
             </Settings>
           </SettingWrapper>
           <StakeSelector>
