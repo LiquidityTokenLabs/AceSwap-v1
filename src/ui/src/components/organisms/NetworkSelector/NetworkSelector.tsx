@@ -17,9 +17,10 @@ export type Chain = {
 
 type Props = {
   currentChainId: number | undefined
+  address: string | undefined
 }
 
-export const NetworkSelector: FC<Props> = ({ currentChainId }) => {
+export const NetworkSelector: FC<Props> = ({ currentChainId, address }) => {
   const changeChain = async (id: number) => {
     try {
       await window.ethereum.request({
@@ -47,25 +48,36 @@ export const NetworkSelector: FC<Props> = ({ currentChainId }) => {
       } catch (Exeption) {}
     }
   }
-
-  if (currentChainId == 592) {
-    return (
-      <Root>
-        <CurrentChain>
-          <NetworkWrapper>
-            <Logo image={getBase64Src(`${currentChainId}`)} />
-            <Text>ASTAR</Text>
-          </NetworkWrapper>
-        </CurrentChain>
-      </Root>
-    )
+  if (address) {
+    if (currentChainId == 592) {
+      return (
+        <Root>
+          <CurrentChain>
+            <NetworkWrapper>
+              <Logo image={getBase64Src(`${currentChainId}`)} />
+              <Text>ASTAR</Text>
+            </NetworkWrapper>
+          </CurrentChain>
+        </Root>
+      )
+    } else {
+      return (
+        <Root>
+          <SwitchNetwork onClick={() => changeChain(592)}>
+            <IoWarningOutline />
+            <Text>Switch Network</Text>
+          </SwitchNetwork>
+        </Root>
+      )
+    }
   } else {
     return (
       <Root>
-        <SwitchNetwork onClick={() => changeChain(592)}>
-          <IoWarningOutline />
-          <Text>Switch Network</Text>
-        </SwitchNetwork>
+        <CurrentChain>
+          <NetworkWrapperNoAccount>
+            <p>-</p>
+          </NetworkWrapperNoAccount>
+        </CurrentChain>
       </Root>
     )
   }
@@ -102,6 +114,13 @@ const NetworkWrapper = styled('div')({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
+})
+
+const NetworkWrapperNoAccount = styled('div')({
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 })
 
 const Img = styled('div')({

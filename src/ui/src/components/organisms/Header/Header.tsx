@@ -37,7 +37,10 @@ export const Header: FC<Props> = ({
       </CenterNav>
       <RightNav>
         <NetworkSelectorWrapper>
-          <NetworkSelector currentChainId={currentChainId} />
+          <NetworkSelector
+            currentChainId={currentChainId}
+            address={connectStatus.address}
+          />
         </NetworkSelectorWrapper>
         <WalletConnectWrapper>
           <ConnectWallet
