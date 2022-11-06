@@ -3,6 +3,7 @@ import { FixedButton, Logo } from '@liqlab/ui'
 import { Color } from '@liqlab/utils/Color'
 import { getBase64Src } from '@liqlab/utils/Config/TokenConfig'
 import { Pool } from '@liqlab/utils/Domain/Pool'
+import { ethers } from 'ethers'
 import { FC, useEffect, useState } from 'react'
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
 import { poolContract } from '../../hook'
@@ -31,8 +32,9 @@ export const StakeFT: FC<Props> = ({ stakePrice, delta, staking, pool }) => {
       if (!pool) return
       const x = await poolContract.stakeFTprice()
       const y = pool?.deltaNum
-      const total = count * (Number(x) - y) - (count * (count - 1) * y) / 2
-      setTotalPrice(total)
+      const tmpTotal = count * (Number(x) - y) - (count * (count - 1) * y) / 2
+      const total = ethers.utils.formatEther(tmpTotal.toString())
+      setTotalPrice(Number(total))
     }
     f()
   }, [count])
@@ -57,7 +59,7 @@ export const StakeFT: FC<Props> = ({ stakePrice, delta, staking, pool }) => {
           <Text>{totalPrice}</Text>
           <Chain>
             <Logo image={getBase64Src('1')} />
-            <Text>ETH</Text>
+            <Text>ASTR</Text>
           </Chain>
         </Frame>
       </Wrapper>
