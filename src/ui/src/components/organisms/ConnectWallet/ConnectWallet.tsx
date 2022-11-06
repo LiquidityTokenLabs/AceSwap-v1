@@ -7,24 +7,26 @@ import { FC } from 'react'
 export type Status = 'INIT' | 'CONNECTED' | 'WAITING'
 
 type Props = {
-  status: Status
-  address: string
+  address: string | undefined
   clickHandler: () => void
 }
 
-export const ConnectWallet: FC<Props> = ({ status, address, clickHandler }) => {
+export const ConnectWallet: FC<Props> = ({ address, clickHandler }) => {
   const { isLoading } = useTx()
-  if (status === 'CONNECTED' && isLoading) {
-    return (
-      <RootLoading>
-        {getShortAddress(address)}
-        <Loading>1 保留中</Loading>
-      </RootLoading>
-    )
-  } else if (status === 'CONNECTED') {
-    return <Root>{getShortAddress(address)}</Root>
+  if (address) {
+    if (isLoading) {
+      return (
+        <RootLoading>
+          {getShortAddress(address)}
+          <Loading>1 保留中</Loading>
+        </RootLoading>
+      )
+    } else {
+      return <Root>{getShortAddress(address)}</Root>
+    }
+  } else {
+    return <Root onClick={clickHandler}>ウォレットに接続</Root>
   }
-  return <Root onClick={clickHandler}>ウォレットに接続</Root>
 }
 
 const Root = styled('div')({
