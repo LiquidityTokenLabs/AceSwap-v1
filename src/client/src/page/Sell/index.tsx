@@ -14,11 +14,6 @@ import { useEthers } from '@usedapp/core'
 import { Card } from '@liqlab/ui'
 import styled from '@emotion/styled'
 
-const NFT_ABI = [
-  'function approve(address to, uint256 tokenId) external',
-  'function setApprovalForAll(address operator, bool _approved) external',
-]
-
 const Page: FC = () => {
   // FIXME Goerliでしか動かないので要修正
   const contractConfig = GoerliConfig // TODO
@@ -33,8 +28,6 @@ const Page: FC = () => {
     loading,
   } = useSwapNFTforFT()
   const { setIsLoading } = useTx()
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
-  const signer = provider.getSigner()
 
   const getPoolInfo = useCallback(async () => {
     const tmpPoolInfo = await poolContract.getPoolInfo()
@@ -108,7 +101,6 @@ const Page: FC = () => {
       const expectFeeWei = ethers.utils.parseEther(expectFeeETH.toString())
       console.log({ expectFeeETH })
       for (let i = 0; i < collectionAddrs.length; ++i) {
-        const nftContract = new Contract(collectionAddrs[i], NFT_ABI, signer)
         await nftContract.approve(contractConfig.Pool721Address, ids[i])
       }
       await SwapNFTforFT(
@@ -121,7 +113,7 @@ const Page: FC = () => {
         }
       )
     },
-    [poolInfo, SwapNFTforFT, signer]
+    [poolInfo, SwapNFTforFT]
   )
 
   useEffect(() => {

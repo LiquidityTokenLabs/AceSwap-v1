@@ -11,7 +11,7 @@ import { AiOutlineArrowLeft } from 'react-icons/ai'
 import { useEthers } from '@usedapp/core'
 import { Contract, ethers } from 'ethers'
 import { useTx } from '../../context/transaction'
-import { nftContract, NFT_ABI, poolContract } from '../../hook'
+import { nftContract, poolContract } from '../../hook'
 import { useStakeNFT } from '../../hook/StakeNFT'
 import { showTransactionToast } from '../Toast'
 import { StakeFT } from './StakeFT'
@@ -63,7 +63,6 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
     const ids = nfts.map((nft) => nft.id)
     const collectionAddrs = nfts.map((nft) => nft.collectionAddr)
     for (let i = 0; i < collectionAddrs.length; ++i) {
-      const nftContract = new Contract(collectionAddrs[i], NFT_ABI, signer)
       await nftContract.approve(contractConfig.Pool721Address, ids[i])
     }
     await send(contractConfig.Pool721Address, ids, {
