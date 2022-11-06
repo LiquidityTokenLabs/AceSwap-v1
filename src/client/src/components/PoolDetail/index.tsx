@@ -64,15 +64,12 @@ export const PoolDetail: FC<Props> = ({
 
   // TODO ステークしているNFT一覧
   const fetchNFT = useCallback(async () => {
-    const tmpPoolInfo = await poolContract.getPoolInfo()
-    const tmpSpotPrice = tmpPoolInfo.spotPrice
-    const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
     const results = await poolContract.getAllHoldIds()
 
     const res = results!.map((nft) => {
       const r: Nft = {
         id: String(nft),
-        price: price,
+        price: -Infinity,
         collectionName: 'AceSwap Girl',
         collectionAddr: contractConfig.TokenAddress,
         name: `AceSwap Girl #${nft}`,
