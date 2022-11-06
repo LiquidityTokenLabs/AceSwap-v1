@@ -6,7 +6,7 @@ import { Hoge } from '../components/Hoge'
 const Page: FC = () => {
   return (
     <Root>
-      Mobile Buy Page <Hoge />
+      PCで再度アクセスしていただけたら嬉しいです <Hoge />
     </Root>
   )
 }

@@ -1,5 +1,5 @@
 import { FC } from 'react'
 
 export const MobileHeader: FC = () => {
-  return <div>Mobile Header</div>
+  return <div>このサービスはPC専用です</div>
 }
