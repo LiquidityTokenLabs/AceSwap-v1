@@ -2,23 +2,24 @@ import styled from '@emotion/styled'
 import { FixedButton, Logo } from '@liqlab/ui'
 import { Color } from '@liqlab/utils/Color'
 import { getBase64Src } from '@liqlab/utils/Config/TokenConfig'
+import { Pool } from '@liqlab/utils/Domain/Pool'
 import { round } from '@liqlab/utils/Format'
-import { FC, useState } from 'react'
+import { useEthers } from '@usedapp/core'
+import { FC, useEffect, useState } from 'react'
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
+import { poolContract } from '../../hook'
 
 type Props = {
   stakePrice: number
   delta: number
   staking: (num: number) => void
+  pool: Pool | undefined
 }
 
-export const StakeFT: FC<Props> = ({ stakePrice, delta, staking }) => {
+export const StakeFT: FC<Props> = ({ stakePrice, delta, staking, pool }) => {
   const [count, setCount] = useState(0)
-
-  const totalPrice = (() => {
-    const res = count * stakePrice + ((count / 2) * (count + 1) - count) * delta
-    return round(res, 4)
-  })()
+  const [totalPrice, setTotalPrice] = useState(0)
+  const { account } = useEthers()
 
   const increment = () => {
     setCount((prev) => prev + 1)
@@ -27,6 +28,19 @@ export const StakeFT: FC<Props> = ({ stakePrice, delta, staking }) => {
     if (count === 0) return
     setCount((prev) => prev - 1)
   }
+
+  useEffect(() => {
+    const f = async () => {
+      if (!pool) return
+      const x = await poolContract.stakeFTprice()
+      const y = pool?.deltaNum
+      const total = count * (Number(x) - y) - (count * (count - 1) * y) / 2
+      setTotalPrice(total)
+    }
+    if (account) {
+      f()
+    }
+  }, [account, count])
 
   return (
     <Root>
