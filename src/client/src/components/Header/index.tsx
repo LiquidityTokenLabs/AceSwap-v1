@@ -1,10 +1,10 @@
 import { Header, MenuItem, Mode, Status } from '@liqlab/ui'
 import { getChainInfoById } from '@liqlab/utils/Config/ChainConfig'
-import React, { FC, useEffect, useState } from 'react'
-import { useMoralis } from 'react-moralis'
-import { ethers } from 'ethers'
-import { useNavigate, useLocation } from 'react-router'
 import { convertDec2Hex } from '@liqlab/utils/Format'
+import { ethers } from 'ethers'
+import { FC, useEffect, useState } from 'react'
+import { useMoralis } from 'react-moralis'
+import { useLocation, useNavigate } from 'react-router'
 
 declare global {
   interface Window {
@@ -28,7 +28,6 @@ const Component: FC = () => {
   const [chainId, setChainId] = useState(0)
 
   useEffect(() => {
-    // console.log({ isAuthenticated, user })
     if (isAuthenticated && !!user) {
       const addr = user.get('ethAddress')
       setAddress(addr)
@@ -73,7 +72,6 @@ const Component: FC = () => {
           nativeCurrency: networkInfo.nativeCurrency,
           rpcUrls: [networkInfo.rpcUrl],
         }
-        // console.log({ params })
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [params],

@@ -87,7 +87,6 @@ const Page: FC = () => {
       const tmpFee = await poolContract.getCalcBuyInfo(ids.length, spotPrice)
       const feeETH = ethers.utils.formatEther(tmpFee.toString())
       const feeWei = ethers.utils.parseEther(feeETH.toString())
-      console.log({ feeETH })
       await SwapFTforNFT(
         contractConfig.Pool721Address,
         ids,
@@ -111,7 +110,6 @@ const Page: FC = () => {
         )
       }, 1000)
     } else if (error) {
-      console.log({ error })
       setTimeout(() => {
         showTransactionToast(
           'スワップ失敗',

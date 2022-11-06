@@ -45,7 +45,6 @@ const Page: FC = () => {
   }, [])
 
   useEffect(() => {
-    // console.log({ isAuthenticated, user })
     if (isAuthenticated && !!user) {
       const addr = user.get('ethAddress')
       setAddress(addr)

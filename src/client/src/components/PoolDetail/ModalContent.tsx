@@ -96,7 +96,6 @@ export const ModalContent: FC<Props> = ({
         )
       }, 1000)
     } else if (error) {
-      console.log({ error })
       setTimeout(() => {
         showTransactionToast(
           'スワップ失敗',

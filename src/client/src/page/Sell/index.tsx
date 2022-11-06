@@ -109,9 +109,7 @@ const Page: FC = () => {
     async (selectedNfts: Nft[]) => {
       // TODO 引数のselectedNftsを売却する処理
       const ids = selectedNfts.map((nft) => nft.id)
-      console.log(ids)
       const collectionAddrs = selectedNfts.map((nft) => nft.collectionAddr)
-      console.log(collectionAddrs)
       if (ids.length === 0 || !poolInfo) {
         return
       }
@@ -122,7 +120,6 @@ const Page: FC = () => {
       )
       const expectFeeETH = ethers.utils.formatEther(minExpectFee.toString())
       const expectFeeWei = ethers.utils.parseEther(expectFeeETH.toString())
-      console.log({ expectFeeETH })
       for (let i = 0; i < collectionAddrs.length; ++i) {
         const nftContract = new Contract(collectionAddrs[i], NFT_ABI, signer)
         await nftContract.approve(contractConfig.Pool721Address, ids[i])
@@ -142,7 +139,6 @@ const Page: FC = () => {
 
   useEffect(() => {
     if (success) {
-      console.log({ hash: transactionHash })
       setTimeout(() => {
         showTransactionToast(
           'スワップ完了',
@@ -151,7 +147,6 @@ const Page: FC = () => {
         )
       }, 1000)
     } else if (error) {
-      console.log({ error })
       setTimeout(() => {
         showTransactionToast(
           'スワップ失敗',

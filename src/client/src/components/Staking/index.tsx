@@ -11,7 +11,7 @@ import { AiOutlineArrowLeft } from 'react-icons/ai'
 import { Contract, ethers } from 'ethers'
 import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { useTx } from '../../context/transaction'
-import { nftContract, NFT_ABI, poolContract } from '../../hook'
+import { nftContract, NFT_ABI } from '../../hook'
 import { useStakeNFT } from '../../hook/StakeNFT'
 import { showTransactionToast } from '../Toast'
 import { StakeFT } from './StakeFT'
@@ -69,13 +69,10 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
     await send(contractConfig.Pool721Address, ids, {
       gasLimit: '3000000',
     })
-    console.log('stake nft :', nfts)
   }
 
   // TODO staking ft
-  const stakeFt = (price: number) => {
-    console.log('stake ft :', price)
-  }
+  const stakeFt = (price: number) => {}
 
   useEffect(() => {
     if (success) {
@@ -87,7 +84,6 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
         )
       }, 1000)
     } else if (error) {
-      console.log({ error })
       setTimeout(() => {
         showTransactionToast(
           'スワップ失敗',
@@ -111,8 +107,6 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
   useEffect(() => {
     setIsLoading(loading)
   }, [loading])
-
-  console.log({ nfts })
 
   return (
     <Root>
