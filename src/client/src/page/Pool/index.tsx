@@ -4,9 +4,9 @@ import { FC, useCallback, useEffect, useState } from 'react'
 import { EmptyPool } from '../../components/EmptyPool'
 import { PoolList } from '../../components/PoolList'
 
+import { ethers } from 'ethers'
 import { useNavigate } from 'react-router'
 import { poolContract } from '../../hook'
-import { ethers } from 'ethers'
 
 const Page: FC = () => {
   const [pool, setPool] = useState<Pool>()
@@ -30,7 +30,7 @@ const Page: FC = () => {
 
     return {
       id: '1234',
-      name: 'AceSwap Girl',
+      name: 'ASG',
       curveType: curveType,
       delta: delta,
       spread: spread,
