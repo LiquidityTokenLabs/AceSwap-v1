@@ -59,7 +59,6 @@ const Component: FC = () => {
   useEffect(() => {
     checkChain()
   }, [provider])
-  console.log({ chainId, account })
 
   return (
     <Header
