@@ -10,6 +10,7 @@ import { showTransactionToast } from '../../components/Toast'
 import { useTx } from '../../context/transaction'
 import { nftContract, poolContract } from '../../hook'
 import { useSwapNFTforFT } from '../../hook/SwapNFTforFT'
+import { useEthers } from '@usedapp/core'
 
 const NFT_ABI = [
   'function approve(address to, uint256 tokenId) external',
@@ -19,6 +20,7 @@ const NFT_ABI = [
 const Page: FC = () => {
   // FIXME Goerliでしか動かないので要修正
   const contractConfig = GoerliConfig // TODO
+  const { account } = useEthers()
   const [nfts, setNfts] = useState<Nft[]>([])
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
   const {
@@ -61,10 +63,7 @@ const Page: FC = () => {
 
   // TODO ユーザーが所持しているNFTを取得
   const fetchNFT = useCallback(async () => {
-    const accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts',
-    })
-    const account = accounts[0]
+    if (!account) return
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
     const tmpSpread = tmpPoolInfo.spread
@@ -86,7 +85,7 @@ const Page: FC = () => {
       return r
     })
     return res
-  }, [])
+  }, [account])
 
   const submit = useCallback(
     async (selectedNfts: Nft[]) => {
@@ -156,8 +155,10 @@ const Page: FC = () => {
       const tmpPoolInfo = await getPoolInfo()
       setPoolInfo(tmpPoolInfo)
     }
-    f()
-  }, [success])
+    if (account) {
+      f()
+    }
+  }, [success, account])
 
   useEffect(() => {
     setIsLoading(loading)
