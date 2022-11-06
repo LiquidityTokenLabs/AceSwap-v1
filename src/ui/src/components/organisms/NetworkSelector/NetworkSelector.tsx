@@ -93,6 +93,7 @@ const SwitchNetwork = styled('div')({
   height: '50px',
   padding: '8px 16px',
   borderRadius: '160px',
+  cursor: 'pointer',
 })
 
 const CurrentChain = styled('div')({
@@ -107,7 +108,6 @@ const CurrentChain = styled('div')({
   alignItems: 'center',
   width: '180px',
   height: '50px',
-  cursor: 'pointer',
 })
 
 const NetworkWrapper = styled('div')({
@@ -133,7 +133,6 @@ const Img = styled('div')({
 const Text = styled('div')({
   fontSize: '16px',
   minWidth: '100px',
-  cursor: 'pointer',
 })
 
 const Root = styled('div')({
