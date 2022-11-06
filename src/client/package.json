@@ -14,7 +14,7 @@
   "dependencies": {
     "@typechain/ethers-v5": "^10.1.0",
     "@types/react-modal": "^3.13.1",
-    "@usedapp/core": "^1.1.5",
+    "@usedapp/core": "^1.2.1",
     "ethers": "^5.7.2",
     "moralis-v1": "^1.11.0",
     "react": "^18.2.0",
