@@ -7,9 +7,13 @@ import { PoolList } from '../../components/PoolList'
 import { ethers } from 'ethers'
 import { useNavigate } from 'react-router'
 import { poolContract } from '../../hook'
+import { useEthers } from '@usedapp/core'
+import { PrimaryButton } from '@liqlab/ui'
 
 const Page: FC = () => {
   const [pool, setPool] = useState<Pool>()
+  const [owner, setOwner] = useState<string>('')
+  const { account } = useEthers()
 
   const navi = useNavigate()
 
@@ -44,12 +48,29 @@ const Page: FC = () => {
     const f = async () => {
       const tmpPoolInfo = await getPoolInfo()
       setPool(tmpPoolInfo)
+      const owner = await poolContract.owner()
+      setOwner(owner)
     }
     f()
   }, [])
 
   const movePage = (id: string) => {
     navi(id)
+  }
+
+  if (account !== owner) {
+    return (
+      <Root>
+        <Header>
+          <Title>Pool</Title>
+          <PrimaryButton
+            label="Staking"
+            clickHandler={() => navi('/pool/1234567890/staking')}
+          />
+        </Header>
+        <EmptyPool />
+      </Root>
+    )
   }
 
   if (!pool) {
@@ -70,10 +91,16 @@ const Page: FC = () => {
 export default Page
 
 const Root = styled('div')({
-  width: '870px',
+  width: '854px',
   height: '272px',
-
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
 })
+
+const Header = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  fontSize: '36px',
+  paddingBottom: '24px',
+})
+
+const Title = styled('div')({})
