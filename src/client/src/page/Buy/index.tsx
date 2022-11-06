@@ -53,7 +53,7 @@ const Page: FC = () => {
     }
   }, [])
 
-  // TODO プールにあるNFT取得
+  // TODO プールNFT取得
   const fetchNFT = useCallback(async () => {
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
