@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import { FC } from 'react'
-import { MoralisProvider } from 'react-moralis'
 import { Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
