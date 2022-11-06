@@ -2,7 +2,7 @@ import { Header, MenuItem, Mode, Status } from '@liqlab/ui'
 import { getChainInfoById } from '@liqlab/utils/Config/ChainConfig'
 import { convertDec2Hex } from '@liqlab/utils/Format'
 import { ethers } from 'ethers'
-import { FC, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { useMoralis } from 'react-moralis'
 import { useLocation, useNavigate } from 'react-router'
 
@@ -26,6 +26,7 @@ const Component: FC = () => {
   const [address, setAddress] = useState('')
   const [status, setStatus] = useState<Status>('INIT')
   const [chainId, setChainId] = useState(0)
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
 
   useEffect(() => {
     if (isAuthenticated && !!user) {
@@ -37,7 +38,7 @@ const Component: FC = () => {
 
   useEffect(() => {
     checkChain()
-  }, [])
+  }, [provider])
 
   const connect = () => {
     if (!isAuthenticated) {
@@ -45,13 +46,12 @@ const Component: FC = () => {
     }
   }
 
-  const checkChain = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const checkChain = useCallback(async () => {
     const tmpInfo = await provider.ready
     const tmpChainId = tmpInfo.chainId
 
     setChainId(tmpChainId)
-  }
+  }, [provider])
 
   const changeChain = async (id: number) => {
     try {
