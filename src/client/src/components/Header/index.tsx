@@ -1,10 +1,8 @@
-import { Header, MenuItem, Mode, Status } from '@liqlab/ui'
-import { getChainInfoById } from '@liqlab/utils/Config/ChainConfig'
-import React, { FC, useEffect, useState } from 'react'
-import { useMoralis } from 'react-moralis'
+import { Header, MenuItem, Mode } from '@liqlab/ui'
+import { useEthers } from '@usedapp/core'
 import { ethers } from 'ethers'
-import { useNavigate, useLocation } from 'react-router'
-import { convertDec2Hex } from '@liqlab/utils/Format'
+import { FC, useCallback, useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router'
 
 declare global {
   interface Window {
@@ -18,79 +16,12 @@ const SELL_PATH = '/sell'
 const POOL_PATH = '/pool'
 
 const Component: FC = () => {
-  const { authenticate, isAuthenticated, user, logout } = useMoralis()
+  const { account, activateBrowserWallet, deactivate } = useEthers()
   const location = useLocation()
   const navi = useNavigate()
   const path = location.pathname
-
-  const [address, setAddress] = useState('')
-  const [status, setStatus] = useState<Status>('INIT')
   const [chainId, setChainId] = useState(0)
-
-  useEffect(() => {
-    // console.log({ isAuthenticated, user })
-    if (isAuthenticated && !!user) {
-      const addr = user.get('ethAddress')
-      setAddress(addr)
-      setStatus('CONNECTED')
-    }
-  }, [isAuthenticated, user])
-
-  useEffect(() => {
-    checkChain()
-  }, [])
-
-  const connect = () => {
-    if (!isAuthenticated) {
-      authenticate()
-    }
-  }
-
-  const checkChain = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const tmpInfo = await provider.ready
-    const tmpChainId = tmpInfo.chainId
-
-    setChainId(tmpChainId)
-  }
-
-  const changeChain = async (id: number) => {
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [
-          {
-            chainId: convertDec2Hex(id),
-          },
-        ],
-      })
-    } catch (Exeption) {
-      try {
-        const networkInfo = getChainInfoById(id)
-        const params = {
-          chainId: convertDec2Hex(id),
-          chainName: networkInfo.network,
-          nativeCurrency: networkInfo.nativeCurrency,
-          rpcUrls: [networkInfo.rpcUrl],
-        }
-        // console.log({ params })
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [params],
-        })
-      } catch (Exeption) {}
-    } finally {
-      window.location.reload() // TODO
-    }
-  }
-
-  // TODO
-  const signOut = () => {
-    logout()
-    window.location.reload()
-    // navi(location.pathname)
-  }
-  // =========================================
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
 
   const modes: Mode[] = [
     {
@@ -115,31 +46,29 @@ const Component: FC = () => {
       label: 'Logout',
       available: true,
       type: 'BUTTON',
-      action: signOut,
+      action: deactivate,
     },
   ]
 
-  const chains = [
-    {
-      info: getChainInfoById(5),
-      action: () => changeChain(5),
-    },
-    {
-      info: getChainInfoById(420),
-      action: () => changeChain(420),
-    },
-  ]
+  const checkChain = useCallback(async () => {
+    const { chainId } = await provider.getNetwork()
+
+    setChainId(chainId)
+  }, [provider])
+
+  useEffect(() => {
+    checkChain()
+  }, [provider])
+  console.log({ chainId, account })
 
   return (
     <Header
       modes={modes}
       menuItems={menuItems}
       currentChainId={chainId}
-      chains={chains}
       connectStatus={{
-        status: status,
-        address: address,
-        connection: connect,
+        address: account,
+        connection: activateBrowserWallet,
       }}
     />
   )
