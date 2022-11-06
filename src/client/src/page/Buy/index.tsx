@@ -1,3 +1,5 @@
+import styled from '@emotion/styled'
+import { Card } from '@liqlab/ui'
 import { ethers } from 'ethers'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { Board } from '../../components/Board'
@@ -137,7 +139,11 @@ const Page: FC = () => {
   }, [loading])
 
   if (poolInfo === null) {
-    return <>LOADING</>
+    return (
+      <Card padding="26px">
+        <Root>LOADING</Root>
+      </Card>
+    )
   }
 
   return (
@@ -146,3 +152,8 @@ const Page: FC = () => {
 }
 
 export default Page
+
+const Root = styled('div')({
+  width: '818px', // 870 - 52
+  height: '498px', // 550 - 52
+})

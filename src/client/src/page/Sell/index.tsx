@@ -11,6 +11,8 @@ import { useTx } from '../../context/transaction'
 import { nftContract, poolContract } from '../../hook'
 import { useSwapNFTforFT } from '../../hook/SwapNFTforFT'
 import { useEthers } from '@usedapp/core'
+import { Card } from '@liqlab/ui'
+import styled from '@emotion/styled'
 
 const NFT_ABI = [
   'function approve(address to, uint256 tokenId) external',
@@ -165,7 +167,11 @@ const Page: FC = () => {
   }, [loading])
 
   if (poolInfo === null) {
-    return <>LOADING</>
+    return (
+      <Card padding="26px">
+        <Root>LOADING</Root>
+      </Card>
+    )
   }
 
   return (
@@ -174,3 +180,8 @@ const Page: FC = () => {
 }
 
 export default Page
+
+const Root = styled('div')({
+  width: '818px', // 870 - 52
+  height: '498px', // 550 - 52
+})
