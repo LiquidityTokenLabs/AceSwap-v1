@@ -65,7 +65,6 @@ const Page: FC = () => {
     if (!id) return
     navi(id)
   }
-  console.log({ address })
 
   if (address !== '0x93ab41e27756C9987a66f9d9FBd895dDD60641A1') {
     return (
