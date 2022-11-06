@@ -42,17 +42,12 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
       method: 'eth_requestAccounts',
     })
     const account = accounts[0]
-    const tmpPoolInfo = await poolContract.getPoolInfo()
-    const tmpSpotPrice = tmpPoolInfo.spotPrice
-    const tmpSpread = tmpPoolInfo.spread
-    const spread = Number(ethers.utils.formatEther(tmpSpread.toString()))
-    const price = Number(ethers.utils.formatEther(tmpSpotPrice.toString()))
     const results = await nftContract.getAllHeldIds(account)
 
     const res = results!.map((nft) => {
       const r: Nft = {
         id: String(nft),
-        price: price * (1 - spread),
+        price: -Infinity,
         collectionName: 'AceSwap Girl',
         collectionAddr: contractConfig.TokenAddress,
         name: `AceSwap Girl #${nft}`,
