@@ -11,7 +11,7 @@ AceSwapはAstar Network上に構築された、NFTの価格が需要と供給に
 
 プロトコル手数料が0%のため他のマーケットプレイスよりも価格が安く、NFTの売買を促進させます。またクリエイターロイヤリティ0%でありながらも、クリエイターはNFTコレクションの総取引量の16%を受け取ることができ、マーケットプレイスの中で最もクリエイターへの還元率が高い設計となっています。
 
-English ver
+
 AceSwap is an NFT AMM protocol built on the Astar Network, where the price of NFTs is determined by supply and demand; by creating a liquidity pool for NFTs, it inhibits (price protection) unhealthy growth such as price spikes and crashes, increases NFT liquidity and This protocol supports the growth of NFTs by increasing NFT liquidity.
 
 Collection owners list their NFTs by staking a portion of their operational NFT holdings on AceSwap, and when one NFT is bought, it automatically creates one sell slot for that NFT collection.
