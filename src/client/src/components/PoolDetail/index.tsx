@@ -53,13 +53,13 @@ export const PoolDetail: FC<Props> = ({
         setMode('INFO')
       },
     },
-    {
-      label: 'イベント履歴',
-      isActive: mode === 'EVENT',
-      action: () => {
-        setMode('EVENT')
-      },
-    },
+    // {
+    //   label: 'イベント履歴',
+    //   isActive: mode === 'EVENT',
+    //   action: () => {
+    //     setMode('EVENT')
+    //   },
+    // },
   ]
 
   // TODO ステークしているNFT一覧
