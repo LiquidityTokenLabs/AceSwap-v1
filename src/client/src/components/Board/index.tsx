@@ -33,7 +33,7 @@ export const Board: FC<Props> = ({ items, poolInfo, submit, operation }) => {
     const x = poolInfo.spotPrice
     const y = poolInfo.deltaNum
     const totalBuyFee = n * x + (n * (n - 1) * y) / 2
-    const totalSellFee = n * (x - y) + (n * (n - 1) * y) / 2
+    const totalSellFee = n * (x - y) - (n * (n - 1) * y) / 2
     return operation === 'BUY'
       ? totalBuyFee
       : totalSellFee * (1 - Number(poolInfo.spread))
