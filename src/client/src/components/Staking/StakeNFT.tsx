@@ -8,7 +8,7 @@ import { NftWrapper } from '../NftWrapper'
 
 type Props = {
   items: Nft[]
-  pool: Pool
+  pool: Pool | undefined
   staking: (nfts: Nft[]) => void
 }
 
