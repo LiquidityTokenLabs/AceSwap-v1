@@ -178,7 +178,12 @@ export const Staking: FC<Props> = ({ pageBack, poolInfo }) => {
               staking={(nfts) => stakeNft(nfts)}
             />
           ) : (
-            <StakeFT stakePrice={stakePrice} delta={delta} staking={stakeFt} />
+            <StakeFT
+              stakePrice={stakePrice}
+              delta={delta}
+              staking={stakeFt}
+              pool={poolInfo}
+            />
           )}
         </Right>
       </Contents>
