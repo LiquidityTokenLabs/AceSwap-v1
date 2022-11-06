@@ -1,20 +1,18 @@
 import { ethers } from 'ethers'
 import { FC, useCallback, useEffect, useState } from 'react'
-import { useMoralisWeb3Api } from 'react-moralis'
 import { Board } from '../../components/Board'
 
 import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
 import { Nft } from '@liqlab/utils/Domain/Nft'
 import { PoolInfo } from '@liqlab/utils/Domain/PoolInfo'
 
-import { poolContract } from '../../hook'
-import { useSwapFTforNFT } from '../../hook/SwapFTforNFT'
 import { showTransactionToast } from '@liqlab/client/src/components/Toast'
 import { useTx } from '../../context/transaction'
+import { poolContract } from '../../hook'
+import { useSwapFTforNFT } from '../../hook/SwapFTforNFT'
 
 const Page: FC = () => {
   const contractConfig = GoerliConfig // TODO
-  const Web3Api = useMoralisWeb3Api()
   const [nfts, setNfts] = useState<Nft[]>([])
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
   const {
@@ -72,7 +70,7 @@ const Page: FC = () => {
       return r
     })
     return res
-  }, [Web3Api.account, poolContract])
+  }, [poolContract])
 
   const submit = useCallback(
     async (selectedNfts: Nft[]) => {

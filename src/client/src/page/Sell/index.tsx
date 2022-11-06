@@ -1,6 +1,5 @@
 import { Contract, ethers } from 'ethers'
 import { FC, useCallback, useEffect, useState } from 'react'
-import { useMoralis, useMoralisWeb3Api } from 'react-moralis'
 import { Board } from '../../components/Board'
 
 import { GoerliConfig } from '@liqlab/utils/Config/ContractConfig'
@@ -8,9 +7,9 @@ import { Nft } from '@liqlab/utils/Domain/Nft'
 import { PoolInfo } from '@liqlab/utils/Domain/PoolInfo'
 
 import { showTransactionToast } from '../../components/Toast'
+import { useTx } from '../../context/transaction'
 import { nftContract, poolContract } from '../../hook'
 import { useSwapNFTforFT } from '../../hook/SwapNFTforFT'
-import { useTx } from '../../context/transaction'
 
 const NFT_ABI = [
   'function approve(address to, uint256 tokenId) external',
@@ -20,8 +19,6 @@ const NFT_ABI = [
 const Page: FC = () => {
   // FIXME Goerliでしか動かないので要修正
   const contractConfig = GoerliConfig // TODO
-  const Web3Api = useMoralisWeb3Api()
-  const { user, isAuthenticated } = useMoralis()
   const [nfts, setNfts] = useState<Nft[]>([])
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
   const {
@@ -64,22 +61,10 @@ const Page: FC = () => {
 
   // TODO ユーザーが所持しているNFTを取得
   const fetchNFT = useCallback(async () => {
-    if (!user) return
-
-    const options: {
-      chain: any
-      address: any
-      token_addresses: any
-    } = await {
-      chain: contractConfig.ChainName, //チェーン
-      address: user.get('ethAddress'), //ロックされているコントラクトの場所
-      token_addresses: contractConfig.TokenAddress, //filterここのアドレスのNFTのみが表示される
-    }
     const accounts = await window.ethereum.request({
       method: 'eth_requestAccounts',
     })
     const account = accounts[0]
-    const tmpCtrItemList = await Web3Api.account.getNFTs(options) //NFT一覧が返ってくる
     const tmpPoolInfo = await poolContract.getPoolInfo()
     const tmpSpotPrice = tmpPoolInfo.spotPrice
     const tmpSpread = tmpPoolInfo.spread
@@ -101,7 +86,7 @@ const Page: FC = () => {
       return r
     })
     return res
-  }, [user, Web3Api.account])
+  }, [])
 
   const submit = useCallback(
     async (selectedNfts: Nft[]) => {
