@@ -129,8 +129,21 @@ const Title = styled('div')({
 
 const Content = styled('div')({
   display: 'flex',
-  gap: '18px 20px',
+  gap: '18px',
   height: '370px',
+  overflowY: 'scroll',
+  flexWrap: 'wrap',
+  '::-webkit-scrollbar-track': {
+    background: Color.white.primary,
+  },
+  '::-webkit-scrollbar-thumb': {
+    borderRadius: '4px',
+    background: Color.black.secondary,
+  },
+  '::-webkit-scrollbar': {
+    width: '4px',
+    borderRadius: '4px',
+  },
 })
 
 const Item = styled('div')({})
